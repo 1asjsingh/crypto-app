@@ -1,0 +1,25 @@
+.navbar {
+    width: 100%;
+    padding: 15px;
+    padding-bottom: 0;
+}
+
+.nav-logo {
+    color: blueviolet;
+}
+
+.logo {
+    padding-left: 10px;
+    font-size: 30px;
+    font-weight: 650;
+    color: blueviolet;
+}
+
+.sign-in-button {
+    padding-right: 10px
+}
+
+.sign-in {
+    border-radius: 14px;
+    font-weight: 400;
+}

@@ -1,0 +1,28 @@
+.card {
+  background-color: #061b2e;
+  width: 18rem;
+  border-radius: 30px;
+  margin: 25px;
+  transition: transform 250ms;
+}
+
+.card:hover {
+  transform: scale(1.1);
+}
+.card-body {
+  text-align: center;
+}
+
+.coin-img {
+  object-fit: contain;
+  height: 50px;
+}
+
+.price {
+  font-weight: 750;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
