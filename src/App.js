@@ -1,8 +1,9 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./Navbar.js";
-import Coins from "./Coins.js";
-import requests from "./requests.js";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Navbar from "./components/Navbar.js";
+import Coins from "./components/Coins.js";
+import requests from "./components/requests.js";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
             element={<Coins request_url={requests.getCurrencies} />}
           />
         </Routes>
-      </div>s
+      </div>
     </Router>
   );
 }
