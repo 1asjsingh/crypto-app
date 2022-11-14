@@ -1,0 +1,8 @@
+.load-overlay {
+  display: flex;
+  justify-content: center;
+}
+
+.spinner-border {
+  color: #f400a1;
+}

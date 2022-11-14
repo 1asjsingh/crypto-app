@@ -13,13 +13,23 @@
   text-align: center;
 }
 
-.coin-img {
+.card-img {
   object-fit: contain;
   height: 50px;
 }
 
+.card-title {
+  margin-top: 5px;
+}
+
 .price {
   font-weight: 750;
+}
+
+.more-button {
+  border-radius: 14px;
+  background-color: #F400A1;
+  color: white;
 }
 
 .row {

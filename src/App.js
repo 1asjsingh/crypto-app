@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "./components/Navbar.js";
 import Coins from "./components/Coins.js";
-import requests from "./components/requests.js";
+import CoinDetails from "./components/CoinDetails.js";
 
 function App() {
   return (
@@ -13,7 +13,12 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<Coins request_url={requests.getCurrencies} />}
+            element={<Coins />}
+          />
+
+          <Route
+            path="/:coin"
+            element={<CoinDetails />}
           />
         </Routes>
       </div>

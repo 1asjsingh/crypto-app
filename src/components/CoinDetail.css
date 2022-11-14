@@ -1,0 +1,25 @@
+.info-top {
+    text-align: center;
+}
+
+.coin-title {
+    font-size: 100px;
+}
+
+.detail-card {
+    background-color: #2f2f2f;
+    border-radius: 30px;
+    padding: 25px;
+    margin: 20px;
+}
+
+.coin-chart {
+    background-color: #2f2f2f;
+    border-radius: 30px;
+    padding: 20px;
+}
+
+p em {
+    color: #F400A1;
+    font-style: normal;
+}

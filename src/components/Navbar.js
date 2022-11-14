@@ -1,20 +1,18 @@
 import React from "react";
-import "./default-profile.png";
+import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
 function Navbar() {
+  const navigate = useNavigate();
+
   return (
     <nav className="navbar">
       <div className="nav-logo">
-        <p className="logo">COINVERSE</p>
-      </div>
-
-      <div className="profile">
-        <img href="./default-profile.png" />
+        <p className="logo" onClick={() => navigate(`/`)}>COINVERSE</p>
       </div>
 
       <div className="sign-in-button">
-        <button type="button" className="btn btn-primary sign-in">
+        <button type="button" className="btn sign-in">
           Sign In
         </button>
       </div>

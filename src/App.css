@@ -1,12 +1,10 @@
 @import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap);
-*{
+* {
   padding: 0px;
   margin: 0px;
+  font-family: Montserrat;
 }
 
 .App {
-  margin: 0;
-  padding: 0;
-  background-color: #1b1b1b;
   color: white;
 }
