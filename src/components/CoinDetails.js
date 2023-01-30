@@ -18,6 +18,7 @@ function CoinDetails({ request_url }) {
     };
     getData();
   }, [coin]);
+  console.log(details.market_data)
   if (details.length === 0) return <Loading />;
 
   return (
@@ -32,7 +33,7 @@ function CoinDetails({ request_url }) {
           </div>
           <div className="row">
             <h2 className="coin-header-price col detail-card">${details.market_data.current_price.usd}</h2>
-            <h2 className="coin-header-change col detail-card" style={{color: details.market_data.price_change_24h_in_currency.usd < 0 ? "red" : "green"}}>{details.market_data.price_change_24h_in_currency.usd.toFixed(2)}%</h2>
+            <h2 className="coin-header-change col detail-card" style={{color: details.market_data.price_change_24h_in_currency.usd < 0 ? "red" : "green"}}>{details.market_data.price_change_percentage_24h_in_currency.usd.toFixed(2)}%</h2>
           </div>
         </div>
       </div>
@@ -62,7 +63,7 @@ function CoinDetails({ request_url }) {
             </p>
             <p>
               <em>Price Change (24H):</em>{" "}
-              {details.market_data.price_change_24h_in_currency.usd.toFixed(2)}%
+              {details.market_data.price_change_percentage_24h_in_currency.usd.toFixed(2)}%
             </p>
           </div>
           <div className="coin-description col detail-card">

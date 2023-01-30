@@ -1,0 +1,23 @@
+.portfolio-balance {
+  text-align: center;
+  background-color: #2f2f2f;
+  border-radius: 30px;
+  padding: 25px;
+  margin: 20px;
+}
+
+.portfolio-chart {
+  text-align: center;
+  background-color: #2f2f2f;
+  border-radius: 30px;
+  padding: 25px;
+  margin: 20px;
+}
+
+.portfolio-stats {
+  text-align: center;
+  background-color: #2f2f2f;
+  border-radius: 30px;
+  padding: 25px;
+  margin: 20px;
+}

@@ -1,26 +1,36 @@
 .navbar {
-    width: 100%;
-    padding: 10px;
+  width: 100%;
+  padding: 10px;
 }
 
 .nav-logo {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .logo {
-    margin-left: 10px;
-    font-size: 30px;
-    font-weight: 650;
-    color: #F400A1;
+  margin-left: 10px;
+  font-size: 30px;
+  font-weight: 650;
+  color: #f400a1;
+  margin-bottom: 0;
 }
 
-.sign-in-button {
-    margin-right: 10px;
+.sign-button {
+  margin-right: 10px;
 }
 
-.sign-in {
-    border-radius: 14px;
-    font-weight: 400;
-    background-color: #F400A1;
-    color: white;
+.sign {
+  border-radius: 14px;
+  font-weight: 400;
+  background-color: #f400a1;
+  color: white;
 }
+
+.search-input {
+    width: 100%;
+}
+
+.search-input::placeholder {
+    text-align: center;
+}
+
