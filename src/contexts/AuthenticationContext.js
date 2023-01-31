@@ -1,5 +1,5 @@
 import React, { useContext, createContext, useEffect, useState } from "react";
-import { auth, db } from "../components/firebase";
+import { auth } from "../components/firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -28,12 +28,6 @@ export function AuthenticationProvider({ children }) {
     return signOut(auth);
   }
 
-  function setBalance() {
-    return db.collection("crypto-accounts").doc(authedUser.uid).set({
-      balance: 15000,
-    });
-  }
-
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       setAuthedUser(user);
@@ -42,7 +36,7 @@ export function AuthenticationProvider({ children }) {
 
   return (
     <AuthenticationContext.Provider
-      value={{ authedUser, register, signIn, authSignOut, setBalance }}
+      value={{ authedUser, register, signIn, authSignOut }}
     >
       {children}
     </AuthenticationContext.Provider>

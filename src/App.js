@@ -7,6 +7,7 @@ import CoinDetails from "./components/CoinDetails.js";
 import SignIn from "./components/SignIn.js";
 import Register from "./components/Register.js";
 import { AuthenticationProvider } from "./contexts/AuthenticationContext";
+import ProtectedRoutes from "./contexts/ProtectedRoutes";
 import Portfolio from "./components/Portfolio";
 
 function App() {
@@ -16,11 +17,13 @@ function App() {
         <div className="App">
           <Navbar />
           <Routes>
-            <Route path="/" element={<Coins />} />
-            <Route path="/:coin" element={<CoinDetails />} />
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/" exact element={<Coins />} />
+              <Route path="/:coin" element={<CoinDetails />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+            </Route>
             <Route path="/signin" element={<SignIn />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/portfolio" element={<Portfolio />} />
           </Routes>
         </div>
       </AuthenticationProvider>
