@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "./axios";
 import "./Coins.css";
 import { getCurrencies } from "./requests.js";
+import Loading from "./Loading";
 
 function Coins() {
   const [coins, setCoins] = useState([]);
@@ -10,13 +11,16 @@ function Coins() {
 
   useEffect(() => {
     async function getData() {
-      const request = await axios.get(getCurrencies());
+      const request = await axios.get(
+        getCurrencies(localStorage.getItem("currency").substring(0, 3))
+      );
       setCoins(request.data);
       return request;
     }
     getData();
   }, []);
-  //}, [request_url]); currency?
+
+  if (coins.length === 0) return <Loading />;
   return (
     <div className="container-fluid">
       <div className="row">
@@ -28,7 +32,12 @@ function Coins() {
               <h6 className="card-subtitle mb-2 text-muted">
                 {coin.symbol.toUpperCase()}
               </h6>
-              <p className="card-text price">{coin.current_price}</p>
+              <p className="card-text price">
+                {localStorage.getItem("currency").substring(3, 4)}
+                {coin.current_price.toLocaleString("en-GB", {
+                  maximumFractionDigits: 20,
+                })}
+              </p>
               <button
                 type="button"
                 className="btn more-button"

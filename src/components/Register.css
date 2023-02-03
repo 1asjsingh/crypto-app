@@ -6,6 +6,11 @@
     width: 75%;
 }
 
+.curr-dropdown {
+    margin-bottom: 10px;
+    
+}
+
 .register-button {
     border-radius: 14px;
     background-color: #F400A1;

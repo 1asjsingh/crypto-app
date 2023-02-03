@@ -14,7 +14,7 @@ export function useAuthentication() {
 }
 
 export function AuthenticationProvider({ children }) {
-  const [authedUser, setAuthedUser] = useState();
+  const [authedUser, setAuthedUser] = useState({});
 
   function register(email, password) {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -29,7 +29,7 @@ export function AuthenticationProvider({ children }) {
   }
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    return onAuthStateChanged(auth, (user) => {
       setAuthedUser(user);
     });
   }, []);

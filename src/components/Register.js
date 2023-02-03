@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Register.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { db } from "../components/firebase";
 import { setDoc, doc } from "firebase/firestore";
+import { UserContext } from "../contexts/UserContext";
 
 function Register() {
   const navigate = useNavigate();
@@ -12,30 +13,29 @@ function Register() {
   const [pass2, setPass2] = useState();
   const [error, setError] = useState();
   const { register } = useAuthentication();
-  const currencies = ["usd", "cad", "gbp"];
+  const { setCurrency } = useContext(UserContext);
+  const currencies = ["usd$", "cad$", "gbp£"];
+  const [RegCurr, setRegCurr] = useState(currencies[0]);
 
   async function handleRegister(e) {
     e.preventDefault();
-    try {
-      if (pass !== pass2) {
-        setError("Passwords do not match");
-        return;
-      }
-      await register(email, pass)
-        .then((user) => {
-          setDoc(doc(db, "crypto-accounts", user.user.uid), {
-            currency: "USD",
-          });
-          setError();
-        })
-        .catch((e) => {
-          setError(e.code);
-        });
-      setError();
-      navigate(`/`);
-    } catch (e) {
-      setError(e.code);
+    if (pass !== pass2) {
+      setError("Passwords do not match");
+      return;
     }
+    await register(email, pass)
+      .then(async (user) => {
+        await setDoc(doc(db, "crypto-accounts", user.user.uid), {
+          balance: 100000,
+          currency: RegCurr,
+        })
+        setCurrency(RegCurr);
+        setError();
+        navigate(`/`);
+      })
+      .catch((e) => {
+        setError(e.code);
+      });
   }
 
   return (
@@ -71,6 +71,19 @@ function Register() {
               }}
               required
             />
+
+            <select
+              className="form-control curr-dropdown"
+              onChange={(event) => {
+                setRegCurr(event.target.value);
+              }}
+            >
+              {currencies.map((curr) => (
+                <option key={curr} value={curr}>
+                  {curr.toUpperCase()}
+                </option>
+              ))}
+            </select>
 
             {error && (
               <div className="alert alert-danger" role="alert">

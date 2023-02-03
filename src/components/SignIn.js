@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./SignIn.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
+import { db } from "../components/firebase";
+import { getDoc, doc } from "firebase/firestore";
+import { UserContext } from "../contexts/UserContext";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -9,16 +12,24 @@ function SignIn() {
   const [pass, setPass] = useState();
   const [error, setError] = useState();
   const { signIn } = useAuthentication();
+  const { setCurrency } = useContext(UserContext);
 
   async function handleSignIn(e) {
     e.preventDefault();
-    try {
-      await signIn(email, pass);
-      setError();
-      navigate(`/`);
-    } catch (e) {
-      setError(e.code);
-    }
+    await signIn(email, pass)
+      .then(async (user) => {
+        const userData = await getDoc(doc(db, 'crypto-accounts', user.user.uid));
+        if (userData.exists()) {
+          setCurrency(userData.data().currency);
+        } else {
+          setError("An error occured"); //CHANGE-----------------------
+        }
+        setError();
+        navigate(`/`);
+      })
+      .catch((e) => {
+        setError(e.code);
+      });
   }
 
   return (
