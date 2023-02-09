@@ -36,3 +36,9 @@
   display: flex;
   justify-content: center;
 }
+
+.tableRow {
+  cursor: pointer;
+}
+
+tr > td {border: none;}

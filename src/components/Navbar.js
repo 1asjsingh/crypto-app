@@ -21,17 +21,12 @@ function Navbar() {
         <p className="logo" onClick={() => navigate(`/`)}>
           COINVERSE
         </p>
-        <p className="logo" onClick={() => navigate(`/portfolio`)}>
-          Port
-        </p>
       </div>
 
       <div>
-        <input
-          className="form-control"
-          placeholder="Search"
-          onChange={(event) => {}}
-        />
+      <p className="logo" onClick={() => navigate(`/portfolio`)}>
+          Port
+        </p>
       </div>
 
       <div className="sign-button">

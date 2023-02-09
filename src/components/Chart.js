@@ -5,6 +5,7 @@ import { getChart } from "./requests.js";
 import Loading from "./Loading";
 import moment from "moment";
 import "./chart.css";
+import zoomPlugin from "chartjs-plugin-zoom";
 
 import {
   Chart as ChartJS,
@@ -17,6 +18,7 @@ import {
   Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+ChartJS.register(zoomPlugin);
 
 function Chart({ currency }) {
   const [chartData, setChartData] = useState([]);
@@ -71,9 +73,6 @@ function Chart({ currency }) {
         },
       },
       y: {
-        ticks: {
-          display: false,
-        },
         grid: {
           display: false,
         },
@@ -83,6 +82,20 @@ function Chart({ currency }) {
       mode: "nearest",
       intersect: false,
       axis: "x",
+    },
+    plugins: {
+      zoom: {
+        pan: {
+            enabled: true,
+            mode: 'x'
+          },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          mode: "x",
+        },
+      },
     },
   };
 
@@ -103,10 +116,18 @@ function Chart({ currency }) {
     <div>
       <div className="container">
         <div className="row">
-          <button type="button" onClick={() => setRange(1)} className="btn date-btn col">
+          <button
+            type="button"
+            onClick={() => setRange(1)}
+            className="btn date-btn col"
+          >
             1D
           </button>
-          <button type="button" onClick={() => setRange(7)} className="btn date-btn col">
+          <button
+            type="button"
+            onClick={() => setRange(7)}
+            className="btn date-btn col"
+          >
             7D
           </button>
           <button

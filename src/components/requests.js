@@ -7,5 +7,7 @@ export const getDetails = (coin) =>
 export const getChart = (coin, currency, range) =>
   `coins/${coin}/market_chart?vs_currency=${currency}&days=${range}`;
 
-export const searchCurrencies = () =>
-  `https://api.coingecko.com/api/v3/coins/list?include_platform=false `;
+//export const searchCurrencies = () => `coins/list?include_platform=false `;
+
+export const getLatestPrices = (coins, currency) =>
+  `simple/price?ids=${coins}&vs_currencies=${currency}`; //bitcoin%2Cethereum
