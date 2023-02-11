@@ -6,8 +6,11 @@ import { getCurrencies } from "./requests.js";
 import Loading from "./Loading";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
-import { Col, Container, Row } from "react-bootstrap";
-import { BsFillArrowUpCircleFill, BsFillArrowDownCircleFill } from "react-icons/bs";
+import { Col, Container, Row, Dropdown } from "react-bootstrap";
+import {
+  BsFillArrowUpCircleFill,
+  BsFillArrowDownCircleFill,
+} from "react-icons/bs";
 
 function Coins() {
   const [coins, setCoins] = useState([]);
@@ -32,6 +35,7 @@ function Coins() {
   }, []);
 
   const switchView = () => {
+    setOrder("");
     if (tableView) {
       setTableView(false);
     } else {
@@ -39,10 +43,15 @@ function Coins() {
     }
   };
 
-  const sortTable = (col) => {
-    const currOrder = sortCol === col && order === "ASC" ? "DESC" : "ASC";
-    setSortCol(col);
-    setOrder(currOrder)
+  const sortTable = (col, gridOrder) => {
+    let currOrder;
+    if (!gridOrder) {
+      currOrder = sortCol === col && order === "ASC" ? "DSC" : "ASC";
+      setSortCol(col);
+      setOrder(currOrder);
+    } else {
+      currOrder = gridOrder;
+    }
     if (currOrder === "ASC") {
       if (col === "current_price") {
         setCoins(
@@ -51,11 +60,15 @@ function Coins() {
           )
         );
       } else {
-        setCoins([...coins].sort((a, b) => (a[col].toLowerCase() > b[col].toLowerCase() ? 1 : -1)));
+        setCoins(
+          [...coins].sort((a, b) =>
+            a[col].toLowerCase() > b[col].toLowerCase() ? 1 : -1
+          )
+        );
       }
     }
-    
-    if (currOrder === "DESC") {
+
+    if (currOrder === "DSC") {
       if (col === "current_price") {
         setCoins(
           [...coins].sort((a, b) =>
@@ -63,9 +76,20 @@ function Coins() {
           )
         );
       } else {
-        setCoins([...coins].sort((a, b) => (a[col].toLowerCase() > b[col].toLowerCase() ? -1 : 1)));
+        setCoins(
+          [...coins].sort((a, b) =>
+            a[col].toLowerCase() > b[col].toLowerCase() ? -1 : 1
+          )
+        );
       }
     }
+  };
+
+  const handleGridSort = (val) => {
+    const selectedCol = val.substring(3)
+    const selectedOrd = val.substring(0, 3)
+
+    sortTable(selectedCol, selectedOrd);
   };
 
   if (coins.length === 0) return <Loading />;
@@ -98,11 +122,42 @@ function Coins() {
           <thead>
             <tr>
               <th>Icon</th>
-              <th onClick={() => sortTable("name")}>Name {sortCol === "name" ? (order === "ASC" ? <BsFillArrowUpCircleFill /> : <BsFillArrowDownCircleFill />) : ''}</th>
-              <th onClick={() => sortTable("symbol")}>
-                Symbol {sortCol === "symbol" ? (order === "ASC" ? <BsFillArrowUpCircleFill /> : <BsFillArrowDownCircleFill />) : ''}
+              <th onClick={() => sortTable("name")}>
+                Name{" "}
+                {sortCol === "name" ? (
+                  order === "ASC" ? (
+                    <BsFillArrowUpCircleFill />
+                  ) : (
+                    <BsFillArrowDownCircleFill />
+                  )
+                ) : (
+                  ""
+                )}
               </th>
-              <th onClick={() => sortTable("current_price")}>Price {sortCol === "current_price" ? (order === "ASC" ? <BsFillArrowUpCircleFill /> : <BsFillArrowDownCircleFill />) : ''}</th>
+              <th onClick={() => sortTable("symbol")}>
+                Symbol{" "}
+                {sortCol === "symbol" ? (
+                  order === "ASC" ? (
+                    <BsFillArrowUpCircleFill />
+                  ) : (
+                    <BsFillArrowDownCircleFill />
+                  )
+                ) : (
+                  ""
+                )}
+              </th>
+              <th onClick={() => sortTable("current_price")}>
+                Price{" "}
+                {sortCol === "current_price" ? (
+                  order === "ASC" ? (
+                    <BsFillArrowUpCircleFill />
+                  ) : (
+                    <BsFillArrowDownCircleFill />
+                  )
+                ) : (
+                  ""
+                )}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -143,7 +198,25 @@ function Coins() {
           </tbody>
         </Table>
       ) : (
-        <div className="row">
+        <Row>
+          <Dropdown onSelect={handleGridSort}>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+              Sort
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item eventKey={"DSCcurrent_price"}>
+                Price (Highest)
+              </Dropdown.Item>
+              <Dropdown.Item eventKey={"ASCcurrent_price"}>
+                Price (Lowest)
+              </Dropdown.Item>
+              <Dropdown.Item eventKey={"ASCname"}>Name (A-Z)</Dropdown.Item>
+              <Dropdown.Item eventKey={"DSCname"}>Name (Z-A)</Dropdown.Item>
+              <Dropdown.Item eventKey={"ASCsymbol"}>Symbol (A-Z)</Dropdown.Item>
+              <Dropdown.Item eventKey={"DSCsymbol"}>Symbol (Z-A)</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
           {coins
             .filter((term) => {
               if (search === "") {
@@ -183,7 +256,7 @@ function Coins() {
                 </div>
               </div>
             ))}
-        </div>
+        </Row>
       )}
     </Container>
   );

@@ -17,6 +17,8 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+import { Col, Row } from "react-bootstrap";
+import Candlestick from "./Candlestick";
 
 function CoinDetails() {
   const { authedUser } = useAuthentication();
@@ -24,12 +26,22 @@ function CoinDetails() {
   const [details, setDetails] = useState([]);
   const [quantity, setQuantity] = useState();
   const [cost, setCost] = useState(0);
+  const [candleView, setCandleView] = useState(false);
+
   const getLocalCurr = () => {
     return localStorage.getItem("currency").substring(0, 3);
   };
   const getSymbol = () => {
     return localStorage.getItem("currency").substring(3, 4);
   };
+
+  const switchChartView = () => {
+    if (candleView) {
+      setCandleView(false);
+    } else {
+      setCandleView(true);
+    }
+  }
 
   useEffect(() => {
     const getData = async () => {
@@ -205,9 +217,19 @@ function CoinDetails() {
         </div>
       </div>
       <div className="container">
+      <Row>
+        <Col>
+          <Button
+            variant="primary"
+            onClick={switchChartView}
+          >
+            Switch View
+          </Button>
+        </Col>
+      </Row>
         <div className="row">
           <div className="coin-chart col detail-card">
-            <Chart currency={getLocalCurr()} />
+            {candleView ? <Candlestick currency={getLocalCurr()}/> :<Chart currency={getLocalCurr()} />}
           </div>
         </div>
         <div className="row">
