@@ -4,6 +4,7 @@ import axios from "./axios";
 import ReactApexChart from "react-apexcharts";
 import { getCandleChart } from "./requests.js";
 import Loading from "./Loading";
+import "./Candlestick.css"
 
 function Candlestick({ currency }) {
   const [candleData, setCandleData] = useState([]);
@@ -40,14 +41,36 @@ function Candlestick({ currency }) {
     chart: {
       type: "candlestick",
       height: 350,
+      toolbar: {
+        tools: {
+          download: false,
+          pan: true,
+        },
+      }
     },
     xaxis: {
       type: "datetime",
+      labels: {
+        style: {
+          colors: 'white'
+        }
+      }
     },
     yaxis: {
       tooltip: {
         enabled: true,
       },
+      labels: {
+        style: {
+          colors: 'white'
+        }
+      }
+    },
+    tooltip: {
+      fillSeriesColor: true,
+    },
+    grid: {
+      borderColor: '#202020',
     },
   };
   return (
