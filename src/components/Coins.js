@@ -164,13 +164,14 @@ function Coins() {
             {coins
               .filter((term) => {
                 if (search === "") {
-                  return term;
+                  return true;
                 } else if (
                   term.name.toLowerCase().includes(search.toLowerCase()) ||
                   term.symbol.toLowerCase().includes(search.toLowerCase())
                 ) {
-                  return term;
+                  return true;
                 }
+                return false;
               })
               .map((coin) => (
                 <tr
@@ -220,13 +221,14 @@ function Coins() {
           {coins
             .filter((term) => {
               if (search === "") {
-                return term;
+                return true;
               } else if (
                 term.name.toLowerCase().includes(search.toLowerCase()) ||
                 term.symbol.toLowerCase().includes(search.toLowerCase())
               ) {
-                return term;
+                return true;
               }
+              return false;
             })
             .map((coin) => (
               <div className="card" key={coin.symbol}>
