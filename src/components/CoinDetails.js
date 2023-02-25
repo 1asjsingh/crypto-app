@@ -88,7 +88,7 @@ function CoinDetails() {
             doc(db, "crypto-accounts", authedUser.uid, "transactions", "1"),
             {
               coin: coin,
-              quantity: quantity,
+              quantity: parseFloat(quantity),
               price: details.market_data.current_price[getLocalCurr()],
               time: Date(), //-------------
             }
@@ -134,6 +134,10 @@ function CoinDetails() {
   return (
     <div>
       <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+          <Modal.Title>Buy</Modal.Title>
+        </Modal.Header>
+
         <Modal.Body>
           <div className="container">
             <div className="row">

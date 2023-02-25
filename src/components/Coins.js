@@ -28,7 +28,7 @@ function Coins() {
           setCoins(req.data);
         })
         .catch((e) => {
-          alert(e);
+          alert(e.message);
         });
     }
     getData();
