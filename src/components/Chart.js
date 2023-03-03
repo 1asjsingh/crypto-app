@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import axios from "./axios";
 import { getChart } from "./requests.js";
 import Loading from "./Loading";
@@ -20,9 +19,8 @@ import {
 import { Line } from "react-chartjs-2";
 ChartJS.register(zoomPlugin);
 
-function Chart({ currency }) {
+function Chart({ currency, coin }) {
   const [chartData, setChartData] = useState([]);
-  const { coin } = useParams();
   let [range, setRange] = useState(1);
 
   useEffect(() => {

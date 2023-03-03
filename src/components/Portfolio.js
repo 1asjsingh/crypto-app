@@ -168,7 +168,7 @@ function Portfolio() {
       // IS THIS OK---------------------------
       fetchData();
     }
-  });
+  }); //DEPENDENCY AUTHED USER? CHAC
 
   const [show, setShow] = useState(false);
   const handleClose = () => {
@@ -301,7 +301,16 @@ function Portfolio() {
                   maximumFractionDigits: 20,
                 })}
               </h1>
-              <h4 style={{ color: "green" }}>+3.05%</h4>
+              <h4
+                style={{
+                  color:
+                    100 * (userData.balance / 100000) < 100000
+                      ? "red"
+                      : "green",
+                }}
+              >
+                {(100 * ((userData.balance - 100000) / 100000)).toFixed(2)}%
+              </h4>
             </div>
           </div>
         </div>
@@ -352,7 +361,7 @@ function Portfolio() {
                               : "green",
                         }}
                       >
-                        {(100 * (openPL1[i] / total_price1[i])).toFixed(2)}%
+                        {(100 * (openPL1[i] / (total_price1[i] / quantity1[i]))).toFixed(2)}%
                       </td>
                       <td>
                         <Button variant="primary" onClick={() => handleShow(i)}>

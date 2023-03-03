@@ -233,7 +233,7 @@ function CoinDetails() {
       </Row>
         <div className="row">
           <div className="coin-chart col detail-card">
-            {candleView ? <Candlestick currency={getLocalCurr()}/> :<Chart currency={getLocalCurr()} />}
+            {candleView ? <Candlestick currency={getLocalCurr()} coin={coin}/> :<Chart currency={getLocalCurr()} coin={coin} />}
           </div>
         </div>
         <div className="row">

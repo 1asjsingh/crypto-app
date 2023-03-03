@@ -86,8 +86,8 @@ function Coins() {
   };
 
   const handleGridSort = (val) => {
-    const selectedCol = val.substring(3)
-    const selectedOrd = val.substring(0, 3)
+    const selectedCol = val.substring(3);
+    const selectedOrd = val.substring(0, 3);
 
     sortTable(selectedCol, selectedOrd);
   };
@@ -96,6 +96,9 @@ function Coins() {
 
   return (
     <Container>
+      <Container>
+        <h1>Coins</h1>
+      </Container>
       <Row>
         <Col>
           <Button

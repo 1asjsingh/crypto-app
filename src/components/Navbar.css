@@ -1,36 +1,15 @@
-.navbar {
-  width: 100%;
-  padding: 10px;
-}
-
-.nav-logo {
-  cursor: pointer;
-}
-
-.logo {
-  margin-left: 10px;
-  font-size: 30px;
-  font-weight: 650;
-  color: #f400a1;
-  margin-bottom: 0;
-}
-
-.sign-button {
-  margin-right: 10px;
-}
-
-.sign {
-  border-radius: 14px;
-  font-weight: 400;
-  background-color: #f400a1;
+.nav-link {
   color: white;
 }
 
-.search-input {
-    width: 100%;
+.nav-link:hover {
+  color: lightblue !important;
 }
 
-.search-input::placeholder {
-    text-align: center;
+.logo {
+  color: white;
 }
 
+.logo:hover {
+  cursor: pointer;
+}

@@ -1,32 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import axios from "./axios";
 import ReactApexChart from "react-apexcharts";
 import { getCandleChart } from "./requests.js";
 import Loading from "./Loading";
-import "./Candlestick.css"
+import "./Candlestick.css";
 
-function Candlestick({ currency }) {
+function Candlestick({ currency, coin, gameData }) {
   const [candleData, setCandleData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { coin } = useParams();
   let [range, setRange] = useState(1);
-
 
   useEffect(() => {
     async function getCandleData() {
-      await axios.get(getCandleChart(coin, currency, range))
-      .then((res) => {
+      await axios.get(getCandleChart(coin, currency, range)).then((res) => {
         setCandleData(res.data);
         setLoading(false);
       });
     }
-    getCandleData();
-  }, [coin, currency, range]);
+    if (!gameData) {
+      getCandleData();
+    } else {
+      setCandleData(gameData);
+      setLoading(false);
+    }
+  }, [coin, currency, range, gameData]);
 
   if (loading) return <Loading />;
 
-  const seriesData = candleData.map ((d) => {
+  const seriesData = candleData.map((d) => {
     const candleDate = new Date(d[0]);
     const prices = d.slice(1, 5);
     return { x: candleDate, y: prices };
@@ -46,15 +47,15 @@ function Candlestick({ currency }) {
           download: false,
           pan: true,
         },
-      }
+      },
     },
     xaxis: {
       type: "datetime",
       labels: {
         style: {
-          colors: 'white'
-        }
-      }
+          colors: "white",
+        },
+      },
     },
     yaxis: {
       tooltip: {
@@ -62,20 +63,21 @@ function Candlestick({ currency }) {
       },
       labels: {
         style: {
-          colors: 'white'
-        }
-      }
+          colors: "white",
+        },
+      },
     },
     tooltip: {
       fillSeriesColor: true,
     },
     grid: {
-      borderColor: '#202020',
+      borderColor: "#202020",
     },
   };
   return (
     <div>
       <div className="container">
+      {!gameData &&
         <div className="row">
           <button
             type="button"
@@ -107,12 +109,12 @@ function Candlestick({ currency }) {
           </button>
           <button
             type="button"
-            onClick={() => setRange('max')}
+            onClick={() => setRange("max")}
             className="btn date-btn col"
           >
             Max
           </button>
-        </div>
+        </div>}
         <div>
           <ReactApexChart
             options={options}
