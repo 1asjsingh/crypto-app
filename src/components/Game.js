@@ -15,6 +15,7 @@ function Game() {
   const [answer, setAnswer] = useState([]);
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState(null);
+  const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const getLocalCurr = () => {
@@ -24,20 +25,22 @@ function Game() {
   useEffect(() => {
     const getCandleData = async () => {
       await axios
-        .get(getCandleChart(currentCoin, getLocalCurr(), 30))
+        .get(getCandleChart(currentCoin, getLocalCurr(), 'max'))
         .then((res) => {
-          setAnswer(res.data);
-          setCandleData(res.data.slice(0, -7));
+          const randomIndex = Math.floor(Math.random() * (res.data.length - 176));
+          const randomWindow = res.data.slice(randomIndex, randomIndex + 175)
+          setAnswer(randomWindow);
+          setCandleData(randomWindow.slice(0, -7));
 
           setLoading(false);
           console.log(1);
         });
     };
-    if (currentCoin !== null) {
+    if (currentCoin !== null && answered == false) {
       //-----------------------------
       getCandleData();
     }
-  }, [score]);
+  }, [score, answered]);
 
   const handleAnswer = (selected) => {
     setCandleData(answer);
@@ -108,17 +111,17 @@ function Game() {
       {!answered && (
         <Row>
           <Col>
-            <Button onClick={() => handleAnswer("L")}>Lower</Button>
+            <Button className="w-100" onClick={() => handleAnswer("L")}>Lower</Button>
           </Col>
           <Col>
-            <Button onClick={() => handleAnswer("S")}>Sideways</Button>
+            <Button className="w-100" onClick={() => handleAnswer("S")}>Sideways</Button>
           </Col>
           <Col>
-            <Button onClick={() => handleAnswer("H")}>Higher</Button>
+            <Button className="w-100" onClick={() => handleAnswer("H")}>Higher</Button>
           </Col>
         </Row>
       )}
-      {answered && <Button onClick={() => handleNext()}>Next</Button>}
+      {answered && <Button className="w-100" onClick={() => handleNext()}>Next</Button>}
     </Container>
   );
 }
