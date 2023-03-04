@@ -4,6 +4,7 @@ import ReactApexChart from "react-apexcharts";
 import { getCandleChart } from "./requests.js";
 import Loading from "./Loading";
 import "./Candlestick.css";
+import { Button, Col, Container, Row } from "react-bootstrap";
 
 function Candlestick({ currency, coin, gameData }) {
   const [candleData, setCandleData] = useState([]);
@@ -75,56 +76,47 @@ function Candlestick({ currency, coin, gameData }) {
     },
   };
   return (
-    <div>
-      <div className="container">
-      {!gameData &&
-        <div className="row">
-          <button
-            type="button"
-            onClick={() => setRange(1)}
-            className="btn date-btn col"
-          >
-            1D
-          </button>
-          <button
-            type="button"
-            onClick={() => setRange(7)}
-            className="btn date-btn col"
-          >
-            7D
-          </button>
-          <button
-            type="button"
-            onClick={() => setRange(30)}
-            className="btn date-btn col"
-          >
-            1M
-          </button>
-          <button
-            type="button"
-            onClick={() => setRange(365)}
-            className="btn date-btn col"
-          >
-            1Y
-          </button>
-          <button
-            type="button"
-            onClick={() => setRange("max")}
-            className="btn date-btn col"
-          >
-            Max
-          </button>
-        </div>}
-        <div>
+    <Container>
+      {!gameData && (
+        <Row>
+          <Col>
+            <Button className="w-100" onClick={() => setRange(1)}>
+              1D
+            </Button>
+          </Col>
+          <Col>
+            <Button className="w-100" onClick={() => setRange(7)}>
+              7D
+            </Button>
+          </Col>
+          <Col>
+            <Button className="w-100" onClick={() => setRange(30)}>
+              1M
+            </Button>
+          </Col>
+          <Col>
+            <Button className="w-100" onClick={() => setRange(365)}>
+              1Y
+            </Button>
+          </Col>
+          <Col>
+            <Button className="w-100" onClick={() => setRange("max")}>
+              Max
+            </Button>
+          </Col>
+        </Row>
+      )}
+      <div className="mt-4">
+        <Row>
           <ReactApexChart
             options={options}
             series={series}
             type="candlestick"
             height={600}
           />
-        </div>
+        </Row>
       </div>
-    </div>
+    </Container>
   );
 }
 

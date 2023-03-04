@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "./axios";
 import Loading from "./Loading";
 import { getDetails } from "./requests.js";
@@ -17,8 +17,10 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { Col, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import Candlestick from "./Candlestick";
+import { TbChartCandle } from "react-icons/tb";
+import { AiOutlineLineChart } from "react-icons/ai";
 
 function CoinDetails() {
   const { authedUser } = useAuthentication();
@@ -27,6 +29,7 @@ function CoinDetails() {
   const [quantity, setQuantity] = useState();
   const [cost, setCost] = useState(0);
   const [candleView, setCandleView] = useState(false);
+  const navigate = useNavigate();
 
   const getLocalCurr = () => {
     return localStorage.getItem("currency").substring(0, 3);
@@ -41,16 +44,22 @@ function CoinDetails() {
     } else {
       setCandleView(true);
     }
-  }
+  };
 
   useEffect(() => {
     const getData = async () => {
-      const request = await axios.get(getDetails(coin));
-      setDetails(request.data);
-      return request;
+      try {
+        const request = await axios.get(getDetails(coin));
+        setDetails(request.data);
+        return request;
+      } catch (e) {
+        if (parseInt(e.response.status) === 404) {
+          navigate("/notfound");
+        }
+      }
     };
     getData();
-  }, [coin]);
+  }, [coin, navigate]); //navigate ----------------------------------------------------
 
   useEffect(() => {
     if (quantity && details) {
@@ -134,15 +143,15 @@ function CoinDetails() {
   return (
     <div>
       <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>Buy</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <div className="container">
-            <div className="row">
-              <div className="col">Quantity</div>
-              <div className="col">
+          <Container>
+            <Row>
+              <Col>Quantity</Col>
+              <Col>
                 <input
                   className="form-control"
                   type="number"
@@ -153,16 +162,16 @@ function CoinDetails() {
                     setQuantity(event.target.value);
                   }}
                 />
-              </div>
-            </div>
+              </Col>
+            </Row>
 
-            <div className="row">
-              <div className="col">Total ({getSymbol()})</div>
-              <div className="col">
+            <Row>
+              <Col>Total ({getSymbol()})</Col>
+              <Col>
                 <input className="form-control" value={cost} disabled />
-              </div>
-            </div>
-          </div>
+              </Col>
+            </Row>
+          </Container>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -174,7 +183,7 @@ function CoinDetails() {
         </Modal.Footer>
       </Modal>
 
-      <div className="container">
+      <Container>
         <div className="info-top">
           <div className="coin-img">
             <img src={details.image.large} alt="currency icon" />
@@ -182,18 +191,14 @@ function CoinDetails() {
           <div>
             <h1 className="coin-title">{details.name}</h1>
           </div>
-          <div className="row">
+          <Row>
             <div>
-              <button
-                type="button"
-                onClick={handleShow}
-                className="btn date-btn col"
-              >
+              <Button variant="primary" onClick={handleShow}>
                 Buy
-              </button>
+              </Button>
             </div>
-          </div>
-          <div className="row">
+          </Row>
+          <Row>
             <h2 className="coin-header-price col detail-card">
               {getSymbol()}
               {details.market_data.current_price[getLocalCurr()].toLocaleString(
@@ -217,26 +222,27 @@ function CoinDetails() {
               ].toFixed(2)}
               % (24H)
             </h2>
-          </div>
+          </Row>
         </div>
-      </div>
-      <div className="container">
-      <Row>
-        <Col>
-          <Button
-            variant="primary"
-            onClick={switchChartView}
-          >
-            Switch View
-          </Button>
-        </Col>
-      </Row>
-        <div className="row">
+      </Container>
+      <Container>
+        <Row>
+          <Col className="d-flex justify-content-center">
+            <Button variant="primary" onClick={switchChartView}>
+              {candleView ? <AiOutlineLineChart /> : <TbChartCandle />}
+            </Button>
+          </Col>
+        </Row>
+        <Row>
           <div className="coin-chart col detail-card">
-            {candleView ? <Candlestick currency={getLocalCurr()} coin={coin}/> :<Chart currency={getLocalCurr()} coin={coin} />}
+            {candleView ? (
+              <Candlestick currency={getLocalCurr()} coin={coin} />
+            ) : (
+              <Chart currency={getLocalCurr()} coin={coin} />
+            )}
           </div>
-        </div>
-        <div className="row">
+        </Row>
+        <Row>
           <div className="coin-info col detail-card">
             <p>
               <em>Price:</em> {getSymbol()}
@@ -283,8 +289,8 @@ function CoinDetails() {
           <div className="coin-description col detail-card">
             <div dangerouslySetInnerHTML={{ __html: details.description.en }} />
           </div>
-        </div>
-      </div>
+        </Row>
+      </Container>
     </div>
   );
 }

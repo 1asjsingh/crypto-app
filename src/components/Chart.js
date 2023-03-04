@@ -17,6 +17,7 @@ import {
   Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { Button, Col, Container, Row } from "react-bootstrap";
 ChartJS.register(zoomPlugin);
 
 function Chart({ currency, coin }) {
@@ -84,9 +85,9 @@ function Chart({ currency, coin }) {
     plugins: {
       zoom: {
         pan: {
-            enabled: true,
-            mode: 'x'
-          },
+          enabled: true,
+          mode: "x",
+        },
         zoom: {
           wheel: {
             enabled: true,
@@ -112,40 +113,42 @@ function Chart({ currency, coin }) {
 
   return (
     <div>
-      <div className="container">
-        <div className="row">
-          <button
-            type="button"
-            onClick={() => setRange(1)}
-            className="btn date-btn col"
-          >
-            1D
-          </button>
-          <button
-            type="button"
-            onClick={() => setRange(7)}
-            className="btn date-btn col"
-          >
-            7D
-          </button>
-          <button
-            type="button"
-            onClick={() => setRange(31)}
-            className="btn date-btn col"
-          >
-            1M
-          </button>
-          <button
-            type="button"
-            onClick={() => setRange(365)}
-            className="btn date-btn col"
-          >
-            1Y
-          </button>
-        </div>
+      <Container>
+        <Row>
+          <Col>
+            <Button className="w-100" onClick={() => setRange(1)}>
+              1D
+            </Button>
+          </Col>
 
-        <Line options={options} data={data} />
-      </div>
+          <Col>
+            <Button className="w-100" onClick={() => setRange(7)}>
+              7D
+            </Button>
+          </Col>
+          <Col>
+            <Button className="w-100" onClick={() => setRange(31)}>
+              1M
+            </Button>
+          </Col>
+          <Col>
+            <Button className="w-100" onClick={() => setRange(365)}>
+              1Y
+            </Button>
+          </Col>
+          <Col>
+            <Button className="w-100" onClick={() => setRange('max')}>
+              Max
+            </Button>
+          </Col>
+        </Row>
+
+        <div className="mt-4">
+        <Row>
+          <Line options={options} data={data}/>
+        </Row>
+        </div>
+      </Container>
     </div>
   );
 }
