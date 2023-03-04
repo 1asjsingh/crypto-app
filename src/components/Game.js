@@ -23,7 +23,7 @@ function Game() {
   };
 
   useEffect(() => {
-    const getCandleData = async () => {
+    const getCandleData = async () => { // MAKE IT RETURN DATA ?
       await axios
         .get(getCandleChart(currentCoin, getLocalCurr(), 'max'))
         .then((res) => {
@@ -38,7 +38,9 @@ function Game() {
     };
     if (currentCoin !== null && answered == false) {
       //-----------------------------
-      getCandleData();
+      getCandleData()/*.then(() => {
+        console.log(123)
+      });*/
     }
   }, [score, answered]);
 

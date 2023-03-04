@@ -99,27 +99,31 @@ function Coins() {
       <Container>
         <h1>Coins</h1>
       </Container>
-      <Row>
-        <Col>
-          <Button
-            variant="primary"
-            onClick={switchView}
-            style={{ background: "red", border: "red", borderRadius: "25px" }}
-          >
-            Switch View
-          </Button>
-        </Col>
 
-        <Col>
+      <Row>
+      <Col>
           <input
-            className="form-control"
+            className="form-control w-50"
             placeholder="Search"
             onChange={(event) => {
               setSearch(event.target.value);
             }}
           />
         </Col>
-      </Row>
+
+        <Col>
+          <Button
+            variant="primary"
+            className = "w-50"
+            onClick={switchView}
+            style={{ background: "red", border: "red", borderRadius: "25px" }}
+          >
+            Switch View
+          </Button>
+          </Col>
+        </Row>
+        
+        
       {tableView ? (
         <Table responsive className="coin-table" style={{ color: "white" }}>
           <thead>
