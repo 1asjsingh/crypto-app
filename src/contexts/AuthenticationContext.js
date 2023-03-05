@@ -15,6 +15,7 @@ export function useAuthentication() {
 
 export function AuthenticationProvider({ children }) {
   const [authedUser, setAuthedUser] = useState({});
+  const [loading, setLoading] = useState(true)
 
   function register(email, password) {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -31,8 +32,11 @@ export function AuthenticationProvider({ children }) {
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
       setAuthedUser(user);
+      setLoading(false)
     });
   }, []);
+
+  if (loading) return
 
   return (
     <AuthenticationContext.Provider

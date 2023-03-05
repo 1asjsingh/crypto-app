@@ -14,7 +14,7 @@ import {
   BsFillGrid3X3GapFill,
 } from "react-icons/bs";
 import { BiSortZA } from "react-icons/bi";
-import numeral from 'numeral';
+import numeral from "numeral";
 
 function Coins() {
   const [coins, setCoins] = useState([]);
@@ -29,21 +29,20 @@ function Coins() {
   };
 
   const numeralise = (num) => {
-    const converted = numeral(num).format('0.0a')
-    return (converted.slice(0, -1) + converted.slice(-1).toUpperCase())
-  }
+    const converted = numeral(num).format("0.0a");
+    return converted.slice(0, -1) + converted.slice(-1).toUpperCase();
+  };
 
   useEffect(() => {
     async function getData() {
-      await axios
-        .get(getCurrencies(localStorage.getItem("currency").substring(0, 3)))
-        .then((req) => {
-          setCoins(req.data);
-          console.log(req.data);
-        })
-        .catch((e) => {
-          alert(e.message);
-        });
+      try {
+        const res = await axios.get(
+          getCurrencies(localStorage.getItem("currency").substring(0, 3))
+        );
+        setCoins(res.data);
+      } catch (e) {
+        alert(e);
+      }
     }
     getData();
   }, []);
@@ -58,7 +57,12 @@ function Coins() {
   };
 
   const sortTable = (col, gridOrder) => {
-    const columns = ["current_price", "price_change_percentage_24h", "market_cap", "circulating_supply"];
+    const columns = [
+      "current_price",
+      "price_change_percentage_24h",
+      "market_cap",
+      "circulating_supply",
+    ];
     let currOrder;
     if (!gridOrder) {
       currOrder = sortCol === col && order === "ASC" ? "DSC" : "ASC";
@@ -263,9 +267,7 @@ function Coins() {
                         {getSymbol()}
                         {numeralise(coin.market_cap)}
                       </td>
-                      <td>
-                        {numeralise(coin.circulating_supply)}
-                      </td>
+                      <td>{numeralise(coin.circulating_supply)}</td>
                     </tr>
                   ))}
               </tbody>

@@ -26,6 +26,7 @@ function CoinDetails() {
   const { authedUser } = useAuthentication();
   const { coin } = useParams();
   const [details, setDetails] = useState([]);
+  const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState();
   const [cost, setCost] = useState(0);
   const [candleView, setCandleView] = useState(false);
@@ -51,10 +52,14 @@ function CoinDetails() {
       try {
         const request = await axios.get(getDetails(coin));
         setDetails(request.data);
+        setLoading(false)
         return request;
       } catch (e) {
         if (parseInt(e.response.status) === 404) {
           navigate("/notfound");
+        }
+        else {
+          alert(e)
         }
       }
     };
@@ -77,68 +82,66 @@ function CoinDetails() {
   const handleShow = () => setShow(true);
 
   const handleBuy = async () => {
-    const userData = (
-      await getDoc(doc(db, "crypto-accounts", authedUser.uid))
-    ).data();
+    try {
+      const userData = (
+        await getDoc(doc(db, "crypto-accounts", authedUser.uid))
+      ).data();
 
-    if (cost > userData.balance) {
-      return alert("Not Enough Funds");
-    }
-    if (cost === 0 || cost < 0) {
-      return alert("Please choose a quantity larger than 0.");
-    }
+      if (cost > userData.balance) {
+        return alert("Not Enough Funds");
+      }
+      if (cost === 0 || cost < 0) {
+        return alert("Please choose a quantity larger than 0.");
+      }
 
-    await getDocs(
-      collection(db, "crypto-accounts", authedUser.uid, "transactions")
-    )
-      .then(async (transactions) => {
-        if (transactions.empty) {
-          await setDoc(
-            doc(db, "crypto-accounts", authedUser.uid, "transactions", "1"),
-            {
-              coin: coin,
-              quantity: parseFloat(quantity),
-              price: details.market_data.current_price[getLocalCurr()],
-              time: Date(), //-------------
-            }
-          );
-        } else {
-          const transactionId =
-            1 +
-            transactions.docs.map((data) => ({
-              coin: data.id,
-              ...data.data(),
-            })).length;
+      const transactions = await getDocs(
+        collection(db, "crypto-accounts", authedUser.uid, "transactions")
+      );
+      if (transactions.empty) {
+        await setDoc(
+          doc(db, "crypto-accounts", authedUser.uid, "transactions", "1"),
+          {
+            coin: coin,
+            quantity: parseFloat(quantity),
+            price: details.market_data.current_price[getLocalCurr()],
+            time: Date(), //-------------
+          }
+        );
+      } else {
+        const transactionId =
+          1 +
+          transactions.docs.map((data) => ({
+            coin: data.id,
+            ...data.data(),
+          })).length;
 
-          await setDoc(
-            doc(
-              db,
-              "crypto-accounts",
-              authedUser.uid,
-              "transactions",
-              transactionId.toString()
-            ),
-            {
-              coin: coin,
-              quantity: quantity,
-              price: details.market_data.current_price[getLocalCurr()],
-              time: Date(), //-------------
-            }
-          );
-        }
-      })
-      .then(async () => {
-        await updateDoc(doc(db, "crypto-accounts", authedUser.uid), {
-          balance: userData.balance - cost,
-        });
-      })
-      .catch((e) => {
-        alert(e);
+        await setDoc(
+          doc(
+            db,
+            "crypto-accounts",
+            authedUser.uid,
+            "transactions",
+            transactionId.toString()
+          ),
+          {
+            coin: coin,
+            quantity: quantity,
+            price: details.market_data.current_price[getLocalCurr()],
+            time: Date(), //-------------
+          }
+        );
+      }
+      await updateDoc(doc(db, "crypto-accounts", authedUser.uid), {
+        balance: userData.balance - cost,
       });
-    window.location.reload(false);
+
+      window.location.reload(false);
+    } catch (e) {
+      alert(e);
+    }
   };
 
-  if (details.length === 0) return <Loading />;
+  if (loading) return <Loading />;
 
   return (
     <div>

@@ -26,9 +26,13 @@ function Chart({ currency, coin }) {
 
   useEffect(() => {
     async function getData() {
-      const request = await axios.get(getChart(coin, currency, range));
-      setChartData(request.data);
-      return request;
+      try {
+        const res = await axios.get(getChart(coin, currency, range));
+        setChartData(res.data);
+        return res;
+      } catch (e) {
+        alert(e);
+      }
     }
     getData();
   }, [coin, currency, range]);
@@ -137,16 +141,16 @@ function Chart({ currency, coin }) {
             </Button>
           </Col>
           <Col>
-            <Button className="w-100" onClick={() => setRange('max')}>
+            <Button className="w-100" onClick={() => setRange("max")}>
               Max
             </Button>
           </Col>
         </Row>
 
         <div className="mt-4">
-        <Row>
-          <Line options={options} data={data}/>
-        </Row>
+          <Row>
+            <Line options={options} data={data} />
+          </Row>
         </div>
       </Container>
     </div>

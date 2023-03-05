@@ -13,10 +13,13 @@ function Candlestick({ currency, coin, gameData }) {
 
   useEffect(() => {
     async function getCandleData() {
-      await axios.get(getCandleChart(coin, currency, range)).then((res) => {
+      try {
+        const res = await axios.get(getCandleChart(coin, currency, range));
         setCandleData(res.data);
         setLoading(false);
-      });
+      } catch (e) {
+        alert(e);
+      }
     }
     if (!gameData) {
       getCandleData();

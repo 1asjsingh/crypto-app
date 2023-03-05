@@ -28,6 +28,7 @@ function Register() {
         await setDoc(doc(db, "crypto-accounts", user.user.uid), {
           balance: 100000,
           currency: RegCurr,
+          score: 0,
         })
         setCurrency(RegCurr);
         setError();

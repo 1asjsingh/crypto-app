@@ -19,6 +19,7 @@ import Modal from "react-bootstrap/Modal";
 
 function Portfolio() {
   const { authedUser } = useAuthentication();
+  console.log(authedUser)
   const navigate = useNavigate();
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(true);
