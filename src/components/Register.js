@@ -18,25 +18,33 @@ function Register() {
   const [RegCurr, setRegCurr] = useState(currencies[0]);
 
   async function handleRegister(e) {
-    e.preventDefault();
-    if (pass !== pass2) {
-      setError("Passwords do not match");
-      return;
-    }
-    await register(email, pass)
-      .then(async (user) => {
-        await setDoc(doc(db, "crypto-accounts", user.user.uid), {
-          balance: 100000,
-          currency: RegCurr,
-          score: 0,
-        })
-        setCurrency(RegCurr);
-        setError();
-        navigate(`/`);
-      })
-      .catch((e) => {
-        setError(e.code);
+    try {
+      e.preventDefault();
+      if (pass !== pass2) {
+        setError("Passwords do not match");
+        return;
+      }
+      const user = await register(email, pass);
+      await setDoc(doc(db, "crypto-accounts", user.user.uid), {
+        balance: 100000,
+        currency: RegCurr,
+        score: 0,
       });
+      setCurrency(RegCurr);
+      setError();
+      navigate(`/`);
+    } catch (e) {
+      if ("auth/email-already-in-use" === String(e.code)) {
+        setError("This email already exists");
+      }
+      else if ("auth/weak-password" === String(e.code)) {
+        setError("Password is too weak");
+      }
+      else {
+        setError(e.code)
+      }
+      
+    }
   }
 
   return (

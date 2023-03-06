@@ -125,7 +125,7 @@ function CoinDetails() {
           ),
           {
             coin: coin,
-            quantity: quantity,
+            quantity: parseFloat(quantity),
             price: details.market_data.current_price[getLocalCurr()],
             time: Date(), //-------------
           }

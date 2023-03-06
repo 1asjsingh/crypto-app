@@ -40,6 +40,7 @@ function Coins() {
           getCurrencies(localStorage.getItem("currency").substring(0, 3))
         );
         setCoins(res.data);
+        console.log(res.data)
       } catch (e) {
         alert(e);
       }

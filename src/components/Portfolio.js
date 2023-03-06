@@ -227,7 +227,7 @@ function Portfolio() {
           ),
           {
             coin: coins1[sellIndex],
-            quantity: -sellQuantity,
+            quantity: parseFloat(-sellQuantity),
             price: latestPrice[coins1[sellIndex]][getLocalCurr()],
             time: Date(), //-------------
           }
@@ -305,7 +305,7 @@ function Portfolio() {
               <h4
                 style={{
                   color:
-                    100 * (userData.balance / 100000) < 100000
+                  (100 * ((userData.balance - 100000) / 100000)) < 0
                       ? "red"
                       : "green",
                 }}

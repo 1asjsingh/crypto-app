@@ -15,21 +15,28 @@ function SignIn() {
   const { setCurrency } = useContext(UserContext);
 
   async function handleSignIn(e) {
-    e.preventDefault();
-    await signIn(email, pass)
-      .then(async (user) => {
-        const userData = await getDoc(doc(db, 'crypto-accounts', user.user.uid));
-        if (userData.exists()) {
-          setCurrency(userData.data().currency);
-        } else {
-          setError("An error occured"); //CHANGE-----------------------
-        }
-        setError();
-        navigate(`/`);
-      })
-      .catch((e) => {
-        setError(e.code);
-      });
+    try {
+      e.preventDefault();
+      const user = await signIn(email, pass);
+      const userData = await getDoc(doc(db, "crypto-accounts", user.user.uid));
+      if (userData.exists()) {
+        setCurrency(userData.data().currency);
+      } else {
+        setError("An error occured"); //CHANGE-----------------------
+      }
+      setError();
+      navigate(`/`);
+    } catch (e) {
+      if ("auth/user-not-found" === String(e.code)) {
+        setError("Email not found. Please register");
+      }
+      else if ("auth/wrong-password" === String(e.code)) {
+        setError("Incorrect password");
+      }
+      else {
+        setError(e.code)
+      }
+    }
   }
 
   return (
