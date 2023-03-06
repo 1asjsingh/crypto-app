@@ -108,8 +108,8 @@ function Chart({ currency, coin }) {
       {
         fill: true,
         data: prices,
-        borderColor: "rgb(244, 0, 161)",
-        backgroundColor: "rgb(244, 0, 161, 0.3)",
+        borderColor: "rgb(60, 90, 214)",
+        backgroundColor: "rgb(60, 90, 214, 0.3)",
         pointRadius: 0,
       },
     ],

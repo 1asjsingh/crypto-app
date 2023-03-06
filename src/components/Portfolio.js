@@ -12,14 +12,13 @@ import {
 } from "firebase/firestore";
 import Loading from "./Loading";
 import axios from "./axios";
-import { getLatestPrices } from "./requests.js";
+import { getCurrencies } from "./requests.js";
 import { Table, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 
 function Portfolio() {
   const { authedUser } = useAuthentication();
-  console.log(authedUser)
   const navigate = useNavigate();
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,133 +42,110 @@ function Portfolio() {
     return localStorage.getItem("currency").substring(3, 4);
   };
 
-  function handlePortfolio(transHistoryCopy) {
-    let coins = [];
-    let quantity = [];
-    let total_price = [];
-
-    let docIndex = 0;
-    let indexRemove = [];
-    console.log(transHistoryCopy);
-    transHistoryCopy.forEach((doc) => {
-      //FIFO
-      if (parseFloat(doc.quantity) < 0) {
-        let absVal = Math.abs(parseFloat(doc.quantity));
-        while (absVal > 0) {
-          const index = transHistoryCopy.findIndex((i) => i.coin === doc.coin);
-          const indexQuantity = parseFloat(transHistoryCopy[index]["quantity"]);
-          if (indexQuantity > 0 && absVal >= indexQuantity) {
-            // make sure doesnt compare to sell orders?
-            //transHistoryCopy.splice(index, 1); //push index
-            //docIndex -= 1;
-            indexRemove.push(index);
-            absVal -= indexQuantity;
-            transHistoryCopy[index]["coin"] = "SOLD";
-          } else if (indexQuantity > 0 && absVal < indexQuantity) {
-            transHistoryCopy[index]["quantity"] =
-              parseFloat(transHistoryCopy[index]["quantity"]) - absVal;
-            absVal -= indexQuantity;
-          }
-        }
-        //transHistoryCopy.splice(docIndex, 1);
-        indexRemove.push(docIndex);
-        transHistoryCopy[docIndex]["coin"] = "SELLORDER";
-        //docIndex -= 2;
-      }
-      docIndex += 1;
-      //DO ALL OF ABOVE IN SEPERATE FOREACH BEFORE THIS ONE?
-    });
-    console.log(transHistoryCopy);
-
-    console.log(indexRemove);
-    indexRemove = indexRemove.sort(function (x, y) {
-      return x - y;
-    });
-    console.log(indexRemove);
-
-    for (let i = indexRemove.length - 1; i >= 0; i--) {
-      transHistoryCopy.splice(indexRemove[i], 1);
-      console.log(transHistoryCopy);
-    }
-
-    transHistoryCopy.forEach((doc) => {
-      if (coins.includes(doc.coin)) {
-        //not working
-        const i = coins.indexOf(doc.coin);
-        quantity[i] += parseFloat(doc.quantity);
-        total_price[i] += parseFloat(doc.price) * parseFloat(doc.quantity);
-      } else {
-        coins.push(doc.coin);
-        quantity.push(parseFloat(doc.quantity));
-        total_price.push(parseFloat(doc.price) * parseFloat(doc.quantity));
-      }
-    });
-    setCoins(coins);
-    setQuantity(quantity);
-    setTotal_Price(total_price);
-  }
-
   useEffect(() => {
-    async function getData() {
-      const res = await getDoc(doc(db, "crypto-accounts", authedUser.uid));
-      return res.data(); // await?
-    }
-
-    async function getPort() {
-      const res = await getDocs(
-        collection(db, "crypto-accounts", authedUser.uid, "transactions")
-      );
-      return res;
-    }
-
-    async function getLatest(coinList) {
-      const res = await axios.get(getLatestPrices(coinList, getLocalCurr()));
-      return res;
-    }
-
     async function fetchData() {
-      await getData().then((res) => {
-        setUserData(res);
-      });
-      await getPort().then((transactions) => {
-        const transHistory = transactions.docs.map((data) => ({
+      try {
+        const res = await getDoc(doc(db, "crypto-accounts", authedUser.uid));
+        setUserData(res.data());
+
+        const transactions = await getDocs(
+          collection(db, "crypto-accounts", authedUser.uid, "transactions")
+        );
+
+        let transHistory = transactions.docs.map((data) => ({
           coin: data.id,
           ...data.data(),
         }));
 
         transHistory.sort(function (x, y) {
-          // ------------------------------------------
           return new Date(x.time) - new Date(y.time);
         });
 
-        console.log([...transHistory]);
-        const transHistorycopy = [...transHistory];
+        console.log(transHistory);
+        //const transHistory = [...transHistory];
 
-        handlePortfolio(transHistorycopy);
-      });
+        let coins = [];
+        let quantity = [];
+        let total_price = [];
 
-      const coinsString = coins1.join("%2C");
-      console.log(coinsString);
+        let docIndex = 0;
+        let indexRemove = [];
+        console.log(transHistory);
+        transHistory.forEach((doc) => {
+          //FIFO
+          if (parseFloat(doc.quantity) < 0) {
+            let absVal = Math.abs(parseFloat(doc.quantity));
+            while (absVal > 0) {
+              const index = transHistory.findIndex((i) => i.coin === doc.coin);
+              const indexQuantity = parseFloat(transHistory[index]["quantity"]);
+              if (indexQuantity > 0 && absVal >= indexQuantity) {
+                indexRemove.push(index);
+                absVal -= indexQuantity;
+                transHistory[index]["coin"] = "SOLD";
+              } else if (indexQuantity > 0 && absVal < indexQuantity) {
+                transHistory[index]["quantity"] = (
+                  parseFloat(transHistory[index]["quantity"]) - absVal
+                ).toFixed(2); //FLOATING POINT ERROR FIX
+                absVal -= indexQuantity;
+              }
+            }
+            indexRemove.push(docIndex);
+            transHistory[docIndex]["coin"] = "SELLORDER";
+          }
+          docIndex += 1;
+        });
 
-      await getLatest(coinsString).then((res) => {
+        indexRemove = indexRemove.sort(function (x, y) {
+          return x - y;
+        });
+
+        for (let i = indexRemove.length - 1; i >= 0; i--) {
+          transHistory.splice(indexRemove[i], 1);
+        }
+
+        transHistory.forEach((doc) => {
+          if (coins.includes(doc.coin)) {
+            //not working
+            const i = coins.indexOf(doc.coin);
+            quantity[i] += parseFloat(doc.quantity);
+            total_price[i] += parseFloat(doc.price) * parseFloat(doc.quantity); // total BUY price not current
+          } else {
+            coins.push(doc.coin);
+            quantity.push(parseFloat(doc.quantity));
+            total_price.push(parseFloat(doc.price) * parseFloat(doc.quantity));
+          }
+        });
+        setCoins(coins);
+        setQuantity(quantity);
+        setTotal_Price(total_price);
+
+        let res2 = await axios.get(getCurrencies(getLocalCurr()));
+        res2 = res2.data;
+
         let openPL = [];
-        coins1.forEach((coin) => {
-          const i = coins1.indexOf(coin);
-          const profit =
-            (res.data[coin][getLocalCurr()] - total_price1[i] / quantity1[i]) *
-            quantity1[i];
+        coins.forEach((coin) => {
+          const i = coins.indexOf(coin);
+          const current_price = res2.find(
+            ({ id }) => id === coin
+          ).current_price;
+          const profit = (
+            (current_price - total_price[i] / quantity[i]) *
+            quantity[i]
+          ).toFixed(2);
+          console.log(profit);
           openPL.push(profit);
         });
-        setLatestPrice(res.data);
+
+        setLatestPrice(res2);
         setOpenPL(openPL);
         setLoading(false);
-      });
+      } catch (e) {
+        console.error(e);
+      }
     }
-    if (authedUser.uid && loading) {
-      // IS THIS OK---------------------------
-      fetchData();
-    }
-  }); //DEPENDENCY AUTHED USER? CHAC
+
+    fetchData();
+  }, [authedUser]);
 
   const [show, setShow] = useState(false);
   const handleClose = () => {
@@ -184,7 +160,10 @@ function Portfolio() {
   useEffect(() => {
     if (sellQuantity) {
       setSellPrice(
-        sellQuantity * latestPrice[coins1[sellIndex]][getLocalCurr()]
+        (
+          sellQuantity *
+          latestPrice.find(({ id }) => id === coins1[sellIndex]).current_price
+        ).toFixed(2)
       ); //------------------------------------------------------
     } else {
       setSellPrice(0);
@@ -196,8 +175,8 @@ function Portfolio() {
       await getDoc(doc(db, "crypto-accounts", authedUser.uid))
     ).data();
 
-    if (sellPrice === 0 || sellPrice < 0) {
-      return alert("Please choose a quantity larger than 0.");
+    if (sellPrice === 0 || sellPrice < 0.01) {
+      return alert("Please choose a quantity larger than 0.01");
     }
     if (sellQuantity > quantity1[sellIndex]) {
       return alert("Not enough of this coin owned");
@@ -228,7 +207,7 @@ function Portfolio() {
           {
             coin: coins1[sellIndex],
             quantity: parseFloat(-sellQuantity),
-            price: latestPrice[coins1[sellIndex]][getLocalCurr()],
+            price: latestPrice.find(({ id }) => id === coins1[sellIndex]).current_price,
             time: Date(), //-------------
           }
         );
@@ -305,7 +284,7 @@ function Portfolio() {
               <h4
                 style={{
                   color:
-                  (100 * ((userData.balance - 100000) / 100000)) < 0
+                    100 * ((userData.balance - 100000) / 100000) < 0
                       ? "red"
                       : "green",
                 }}
@@ -325,7 +304,8 @@ function Portfolio() {
               >
                 <thead>
                   <tr>
-                    <th>Name </th>
+                    <th>Icon</th>
+                    <th>Name</th>
                     <th>Quantity</th>
                     <th>Average Price</th>
                     <th>P/L ({getSymbol()})</th>
@@ -337,10 +317,21 @@ function Portfolio() {
                   {coins1.map((coin, i) => (
                     <tr className="tableRow" key={coins1[i]}>
                       <td onClick={() => navigate(`/${coins1[i]}`)}>
-                        {coins1[i]}
+                        <img
+                          style={{ objectFit: "contain", height: "50px" }}
+                          src={
+                            latestPrice.find(({ id }) => id === coins1[i]).image
+                          }
+                          alt="currency icon"
+                        />
                       </td>
-                      <td>{quantity1[i]}</td>
-                      <td>
+                      <td onClick={() => navigate(`/${coins1[i]}`)}>
+                        {latestPrice.find(({ id }) => id === coins1[i]).name}
+                      </td>
+                      <td onClick={() => navigate(`/${coins1[i]}`)}>
+                        {quantity1[i]}
+                      </td>
+                      <td onClick={() => navigate(`/${coins1[i]}`)}>
                         {getSymbol()}
                         {(total_price1[i] / quantity1[i]).toLocaleString(
                           "en-GB",
@@ -349,11 +340,12 @@ function Portfolio() {
                           }
                         )}
                       </td>
-                      <td>
+                      <td onClick={() => navigate(`/${coins1[i]}`)}>
                         {getSymbol()}
                         {openPL1[i]}
                       </td>
                       <td
+                        onClick={() => navigate(`/${coins1[i]}`)}
                         style={{
                           color:
                             (100 * (openPL1[i] / total_price1[i])).toFixed(2) <
@@ -362,7 +354,7 @@ function Portfolio() {
                               : "green",
                         }}
                       >
-                        {(100 * (openPL1[i] / (total_price1[i] / quantity1[i]))).toFixed(2)}%
+                        {(100 * (openPL1[i] / total_price1[i])).toFixed(2)}%
                       </td>
                       <td>
                         <Button variant="primary" onClick={() => handleShow(i)}>
@@ -374,14 +366,6 @@ function Portfolio() {
                   ))}
                 </tbody>
               </Table>
-            </div>
-          </div>
-        </div>
-
-        <div className="container">
-          <div className="row">
-            <div className="portfolio-chart">
-              <h1>chart</h1>
             </div>
           </div>
         </div>

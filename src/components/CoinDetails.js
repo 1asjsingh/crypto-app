@@ -68,7 +68,7 @@ function CoinDetails() {
 
   useEffect(() => {
     if (quantity && details) {
-      setCost(quantity * details.market_data.current_price[getLocalCurr()]);
+      setCost((quantity * details.market_data.current_price[getLocalCurr()]).toFixed(2));
     } else {
       setCost(0);
     }
@@ -90,8 +90,8 @@ function CoinDetails() {
       if (cost > userData.balance) {
         return alert("Not Enough Funds");
       }
-      if (cost === 0 || cost < 0) {
-        return alert("Please choose a quantity larger than 0.");
+      if (cost === 0 || cost < 0.01) {
+        return alert("Please choose a total cost larger than 0.01");
       }
 
       const transactions = await getDocs(

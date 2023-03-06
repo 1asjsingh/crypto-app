@@ -15,6 +15,10 @@ function History() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const getSymbol = () => {
+    return localStorage.getItem("currency").substring(3, 4);
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -26,13 +30,12 @@ function History() {
           getCurrencies(localStorage.getItem("currency").substring(0, 3))
         );
 
-        const transHistory = transactions.docs.map((data) => ({
+        let transHistory = transactions.docs.map((data) => ({
           coin: data.id,
           ...data.data(),
         }));
 
         transHistory.sort(function (x, y) {
-          // ------------------------------------------
           return new Date(y.time) - new Date(x.time);
         });
 
@@ -43,15 +46,11 @@ function History() {
         alert(e);
       }
     }
-    //if (authedUser.uid && loading) {
-    // IS THIS OK---------------------------
+
     fetchData();
-    console.log("test");
-    //}
   }, [authedUser]);
 
   if (loading) return <Loading />;
-  console.log(coinData);
 
   return (
     <Container>
@@ -95,7 +94,7 @@ function History() {
                   })}
                 </td>
                 <td>
-                  {transaction.price.toLocaleString("en-GB", {
+                  {getSymbol()}{transaction.price.toLocaleString("en-GB", {
                     maximumFractionDigits: 20,
                   })}
                 </td>

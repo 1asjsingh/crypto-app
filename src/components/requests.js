@@ -15,5 +15,5 @@ export const getChart = (coin, currency, range) =>
 
 //export const searchCurrencies = () => `coins/list?include_platform=false `;
 
-export const getLatestPrices = (coins, currency) =>
-  `simple/price?ids=${coins}&vs_currencies=${currency}`; //bitcoin%2Cethereum
+//export const getLatestPrices = (coins, currency) =>
+//  `simple/price?ids=${coins}&vs_currencies=${currency}`; //bitcoin%2Cethereum

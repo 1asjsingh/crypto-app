@@ -15,6 +15,7 @@ import { UserContext } from "./contexts/UserContext";
 import PageNotFound from "./components/PageNotFound";
 import Game from "./components/Game";
 import PublicRoutes from "./contexts/PublicRoutes";
+import Leaderboard from "./components/Leaderboard";
 
 function App() {
   const [currency, setCurrency] = useState();
@@ -33,11 +34,12 @@ function App() {
             <Routes>
               <Route path="*" element={<PageNotFound />} />
               <Route element={<ProtectedRoutes />}>
-                <Route path="/" exact element={<Coins />} />
-                <Route path="/:coin" element={<CoinDetails />} />
+                <Route path="/" exact element={<Coins />} /> 
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/game" element={<Game />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/:coin" element={<CoinDetails />} />
               </Route>
               <Route element={<PublicRoutes />}>
                 <Route path="/signin" element={<SignIn />} />

@@ -40,7 +40,6 @@ function Coins() {
           getCurrencies(localStorage.getItem("currency").substring(0, 3))
         );
         setCoins(res.data);
-        console.log(res.data)
       } catch (e) {
         alert(e);
       }
@@ -144,7 +143,7 @@ function Coins() {
           <Row>
             <Table responsive className="coin-table" style={{ color: "white" }}>
               <thead>
-                <tr>
+                <tr className="text-center">
                   <th>Icon</th>
                   <th onClick={() => sortTable("name")}>
                     Name{" "}
@@ -235,8 +234,8 @@ function Coins() {
                   })
                   .map((coin) => (
                     <tr
-                      className="tableRow"
-                      key={coin.symbol}
+                      className="tableRow text-center"
+                      key={coin.current_price}
                       onClick={() => navigate(`/${coin.id}`)}
                     >
                       <td>
