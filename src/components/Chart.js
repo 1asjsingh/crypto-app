@@ -91,6 +91,25 @@ function Chart({ currency, coin, prediction }) {
     Filler
   );
 
+  let zoomOptions;
+
+  if (!prediction) {
+    zoomOptions = {
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: "x",
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          mode: "x",
+        },
+      },
+    }
+  }
+
   const options = {
     responsive: true,
     scales: {
@@ -115,20 +134,7 @@ function Chart({ currency, coin, prediction }) {
       intersect: false,
       axis: "x",
     },
-    plugins: {
-      zoom: {
-        pan: {
-          enabled: true,
-          mode: "x",
-        },
-        zoom: {
-          wheel: {
-            enabled: true,
-          },
-          mode: "x",
-        },
-      },
-    },
+    plugins: zoomOptions
   };
 
   const data = {

@@ -17,3 +17,10 @@ input {
   border-radius: 10px !important;
   background-color: #d3d3d3 !important;
 }
+
+.round-box {
+  background-color: #2f2f2f;
+  border-radius: 30px;
+  padding: 25px !important  ;
+  margin: 20px !important;
+}

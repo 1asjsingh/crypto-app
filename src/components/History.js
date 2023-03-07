@@ -58,7 +58,7 @@ function History() {
         <h1>History</h1>
       </Container>
 
-      <Row>
+      <Row className="round-box">
         <Table responsive className="coin-table" style={{ color: "white" }}>
           <thead>
             <tr className="text-center">

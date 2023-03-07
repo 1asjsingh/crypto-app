@@ -325,7 +325,8 @@ function Coins() {
               return false;
             })
             .map((coin) => (
-              <div className="card" key={coin.symbol}>
+              <div className="card" key={`${coin.symbol}_${Date.now()}`}>
+                {/*to ensure price refreshes on page refresh and not cache*/}
                 <div className="card-body">
                   <img
                     className="card-img"

@@ -21,6 +21,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import Candlestick from "./Candlestick";
 import { TbChartCandle } from "react-icons/tb";
 import { AiOutlineLineChart } from "react-icons/ai";
+import numeral from "numeral";
 
 function CoinDetails() {
   const { authedUser } = useAuthentication();
@@ -31,6 +32,11 @@ function CoinDetails() {
   const [cost, setCost] = useState(0);
   const [candleView, setCandleView] = useState(false);
   const navigate = useNavigate();
+
+  const numeralise = (num) => {
+    const converted = numeral(num).format("0.0a");
+    return converted.slice(0, -1) + converted.slice(-1).toUpperCase();
+  };
 
   const getLocalCurr = () => {
     return localStorage.getItem("currency").substring(0, 3);
@@ -52,6 +58,7 @@ function CoinDetails() {
       try {
         const request = await axios.get(getDetails(coin));
         setDetails(request.data);
+        console.log(request.data);
         setLoading(false);
         return request;
       } catch (e) {
@@ -189,31 +196,32 @@ function CoinDetails() {
         </Modal.Footer>
       </Modal>
 
-      <Container>
-        <div className="info-top">
-          <div className="coin-img">
-            <img src={details.image.large} alt="currency icon" />
-          </div>
+      <Container className="info-top">
+        <div className="coin-img">
+          <img src={details.image.large} alt="currency icon" />
+        </div>
+        <div>
+          <h1 className="coin-title m-auto">{details.name}</h1>
+        </div>
+        <Row>
           <div>
-            <h1 className="coin-title">{details.name}</h1>
+            <Button variant="primary" onClick={handleShow}>
+              Buy
+            </Button>
           </div>
-          <Row>
-            <div>
-              <Button variant="primary" onClick={handleShow}>
-                Buy
-              </Button>
-            </div>
-          </Row>
-          <Row>
-            <h2 className="coin-header-price col detail-card">
+        </Row>
+        <Row>
+          <Col className="round-box justify-content-center">
+            <h2 className="">
               {getSymbol()}
               {details.market_data.current_price[getLocalCurr()].toLocaleString(
                 "en-GB",
                 { maximumFractionDigits: 20 }
               )}
             </h2>
+          </Col>
+          <Col className="round-box">
             <h2
-              className="coin-header-change col detail-card"
               style={{
                 color:
                   details.market_data.price_change_percentage_24h_in_currency[
@@ -226,10 +234,10 @@ function CoinDetails() {
               {details.market_data.price_change_percentage_24h_in_currency[
                 getLocalCurr()
               ].toFixed(2)}
-              % (24H)
+              %
             </h2>
-          </Row>
-        </div>
+          </Col>
+        </Row>
       </Container>
       <Container>
         <Row>
@@ -240,16 +248,14 @@ function CoinDetails() {
           </Col>
         </Row>
         <Row>
-          <div className="coin-chart col detail-card">
+          <Col xl="9" lg="12" md="12" className="coin-chart round-box">
             {candleView ? (
               <Candlestick currency={getLocalCurr()} coin={coin} />
             ) : (
               <Chart currency={getLocalCurr()} coin={coin} />
             )}
-          </div>
-        </Row>
-        <Row>
-          <div className="coin-info col detail-card">
+          </Col>
+          <Col className="coin-info round-box">
             <p>
               <em>Price:</em> {getSymbol()}
               {details.market_data.current_price[getLocalCurr()].toLocaleString(
@@ -257,12 +263,65 @@ function CoinDetails() {
                 { maximumFractionDigits: 20 }
               )}
             </p>
+            <hr />
+            <p
+              style={{
+                color:
+                  details.market_data.price_change_percentage_1h_in_currency[
+                    getLocalCurr()
+                  ] < 0
+                    ? "red"
+                    : "green",
+              }}
+            >
+              <em>Change (1H):</em>{" "}
+              {details.market_data.price_change_percentage_1h_in_currency[
+                getLocalCurr()
+              ].toFixed(2)}
+              %
+            </p>
+            <hr />
+            <p
+              style={{
+                color:
+                  details.market_data.price_change_percentage_24h_in_currency[
+                    getLocalCurr()
+                  ] < 0
+                    ? "red"
+                    : "green",
+              }}
+            >
+              <em>Change (24H):</em>{" "}
+              {details.market_data.price_change_percentage_24h_in_currency[
+                getLocalCurr()
+              ].toFixed(2)}
+              %
+            </p>
+            <hr />
+            <p
+              style={{
+                color:
+                  details.market_data.price_change_percentage_7d_in_currency[
+                    getLocalCurr()
+                  ] < 0
+                    ? "red"
+                    : "green",
+              }}
+            >
+              <em>Change (7D):</em>{" "}
+              {details.market_data.price_change_percentage_7d_in_currency[
+                getLocalCurr()
+              ].toFixed(2)}
+              %
+            </p>
+            <hr />
             <p>
               <em>All-Time High:</em> {getSymbol()}
               {details.market_data.ath[getLocalCurr()].toLocaleString("en-GB", {
                 maximumFractionDigits: 20,
               })}
             </p>
+            <hr />
             <p>
               <em>High (24H):</em> {getSymbol()}
               {details.market_data.high_24h[getLocalCurr()].toLocaleString(
@@ -270,6 +329,7 @@ function CoinDetails() {
                 { maximumFractionDigits: 20 }
               )}
             </p>
+            <hr />
             <p>
               <em>Low (24H):</em> {getSymbol()}
               {details.market_data.low_24h[getLocalCurr()].toLocaleString(
@@ -277,30 +337,30 @@ function CoinDetails() {
                 { maximumFractionDigits: 20 }
               )}
             </p>
+            <hr />
             <p>
-              <em>Market Capitilisation:</em> {getSymbol()}
-              {details.market_data.market_cap[getLocalCurr()].toLocaleString(
-                "en-GB",
-                { maximumFractionDigits: 20 }
-              )}
+              <em>Trading Volume:</em> {getSymbol()}
+              {numeralise(details.market_data.total_volume[getLocalCurr()])}
             </p>
+            <hr />
             <p>
-              <em>Price Change (24H):</em>{" "}
-              {details.market_data.price_change_percentage_24h_in_currency[
-                getLocalCurr()
-              ].toFixed(2)}
-              %
+              <em>Market Cap:</em> {getSymbol()}
+              {numeralise(details.market_data.market_cap[getLocalCurr()])}
             </p>
-          </div>
-          <div className="coin-description col detail-card">
-            <div dangerouslySetInnerHTML={{ __html: details.description.en }} />
-          </div>
+            <hr />
+            <p>
+              <em>Circulating Supply: </em>
+              {numeralise(details.market_data.circulating_supply)}{" "}
+              {details.symbol.toUpperCase()}
+            </p>
+          </Col>
         </Row>
-        <Row>
-          <div className="coin-chart col detail-card">
-            <h3>Prediction</h3>
-            <Chart currency={getLocalCurr()} coin={coin} prediction={true} />
-          </div>
+        <Row className="coin-description round-box">
+          <div dangerouslySetInnerHTML={{ __html: details.description.en }} />
+        </Row>
+        <Row className="coin-chart round-box">
+          <h3>Prediction</h3>
+          <Chart currency={getLocalCurr()} coin={coin} prediction={true} />
         </Row>
       </Container>
     </div>

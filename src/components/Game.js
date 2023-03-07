@@ -129,7 +129,7 @@ function Game() {
           </Alert>
         )}
       </Row>
-      <Row>
+      <Row className="round-box">
         <Candlestick
           currency={getLocalCurr()}
           coin={currentCoin}
@@ -137,7 +137,7 @@ function Game() {
         />
       </Row>
       {!answered && (
-        <Row>
+        <Row className="round-box">
           <Col>
             <Button className="w-100" onClick={() => handleAnswer("L")}>
               Lower

@@ -3,23 +3,17 @@
 }
 
 .coin-title {
-    font-size: 100px;
-}
-
-.detail-card {
-    background-color: #2f2f2f;
-    border-radius: 30px;
-    padding: 25px;
-    margin: 20px;
+    font-size: 5vw;
+    padding-bottom: 15px;
+    padding-top: 15px;
 }
 
 .coin-chart {
     background-color: #2f2f2f;
-    border-radius: 30px;
     padding: 20px;
 }
 
 p em {
-    color: #F400A1;
+    color: #a9a9a9;
     font-style: normal;
 }
