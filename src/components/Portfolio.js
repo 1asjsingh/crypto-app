@@ -104,6 +104,7 @@ function Portfolio() {
         }
 
         transHistory.forEach((doc) => {
+          console.log(doc.quantity * doc.price);
           if (coins.includes(doc.coin)) {
             //not working
             const i = coins.indexOf(doc.coin);
@@ -207,7 +208,8 @@ function Portfolio() {
           {
             coin: coins1[sellIndex],
             quantity: parseFloat(-sellQuantity),
-            price: latestPrice.find(({ id }) => id === coins1[sellIndex]).current_price,
+            price: latestPrice.find(({ id }) => id === coins1[sellIndex])
+              .current_price,
             time: Date(), //-------------
           }
         );
@@ -275,12 +277,13 @@ function Portfolio() {
         <div className="container">
           <div className="row">
             <div className="portfolio-balance">
-              <h1>
-                {getSymbol()}
+              <h1>{getSymbol()}</h1>
+              <h3>
+                Available: {getSymbol()}
                 {userData.balance.toLocaleString("en-GB", {
                   maximumFractionDigits: 20,
                 })}
-              </h1>
+              </h3>
               <h4
                 style={{
                   color:

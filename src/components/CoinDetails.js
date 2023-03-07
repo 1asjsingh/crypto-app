@@ -26,7 +26,7 @@ function CoinDetails() {
   const { authedUser } = useAuthentication();
   const { coin } = useParams();
   const [details, setDetails] = useState([]);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState();
   const [cost, setCost] = useState(0);
   const [candleView, setCandleView] = useState(false);
@@ -52,14 +52,13 @@ function CoinDetails() {
       try {
         const request = await axios.get(getDetails(coin));
         setDetails(request.data);
-        setLoading(false)
+        setLoading(false);
         return request;
       } catch (e) {
         if (parseInt(e.response.status) === 404) {
           navigate("/notfound");
-        }
-        else {
-          alert(e)
+        } else {
+          alert(e);
         }
       }
     };
@@ -68,7 +67,11 @@ function CoinDetails() {
 
   useEffect(() => {
     if (quantity && details) {
-      setCost((quantity * details.market_data.current_price[getLocalCurr()]).toFixed(2));
+      setCost(
+        (quantity * details.market_data.current_price[getLocalCurr()]).toFixed(
+          2
+        )
+      );
     } else {
       setCost(0);
     }
@@ -102,10 +105,10 @@ function CoinDetails() {
           doc(db, "crypto-accounts", authedUser.uid, "transactions", "1"),
           {
             coin: coin,
-            quantity: parseFloat(quantity),
+            quantity: cost / details.market_data.current_price[getLocalCurr()],
             price: details.market_data.current_price[getLocalCurr()],
             time: Date(), //-------------
-          }
+          } //quantity: parseFloat(quantity), MATH.CEIL?
         );
       } else {
         const transactionId =
@@ -125,10 +128,10 @@ function CoinDetails() {
           ),
           {
             coin: coin,
-            quantity: parseFloat(quantity),
+            quantity: cost / details.market_data.current_price[getLocalCurr()],
             price: details.market_data.current_price[getLocalCurr()],
             time: Date(), //-------------
-          }
+          } //quantity: parseFloat(quantity), MATH.CEIL?
         );
       }
       await updateDoc(doc(db, "crypto-accounts", authedUser.uid), {
@@ -291,6 +294,12 @@ function CoinDetails() {
           </div>
           <div className="coin-description col detail-card">
             <div dangerouslySetInnerHTML={{ __html: details.description.en }} />
+          </div>
+        </Row>
+        <Row>
+          <div className="coin-chart col detail-card">
+            <h3>Prediction</h3>
+            <Chart currency={getLocalCurr()} coin={coin} prediction={true} />
           </div>
         </Row>
       </Container>

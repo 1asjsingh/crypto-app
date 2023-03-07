@@ -20,15 +20,28 @@ import { Line } from "react-chartjs-2";
 import { Button, Col, Container, Row } from "react-bootstrap";
 ChartJS.register(zoomPlugin);
 
-function Chart({ currency, coin }) {
+function Chart({ currency, coin, prediction }) {
   const [chartData, setChartData] = useState([]);
-  let [range, setRange] = useState(1);
+  let [range, setRange] = useState((!prediction ? 1 : 365));
+  const [loading, setLoading] = useState(true);
+
+  if (prediction) {
+    //setRange(365);
+  }
 
   useEffect(() => {
     async function getData() {
       try {
-        const res = await axios.get(getChart(coin, currency, range));
-        setChartData(res.data);
+        let res = await axios.get(getChart(coin, currency, range));
+        res = res.data;
+
+        if (prediction) {
+          
+        }
+
+        setChartData(res);
+
+        setLoading(false);
         return res;
       } catch (e) {
         alert(e);
@@ -37,7 +50,7 @@ function Chart({ currency, coin }) {
     getData();
   }, [coin, currency, range]);
 
-  if (chartData.length === 0) return <Loading />;
+  if (loading) return <Loading />;
 
   const times = chartData.prices.map((data) => {
     let unix = new Date(data[0]);
@@ -118,6 +131,7 @@ function Chart({ currency, coin }) {
   return (
     <div>
       <Container>
+        {!prediction && (
         <Row>
           <Col>
             <Button className="w-100" onClick={() => setRange(1)}>
@@ -145,7 +159,7 @@ function Chart({ currency, coin }) {
               Max
             </Button>
           </Col>
-        </Row>
+        </Row>)}
 
         <div className="mt-4">
           <Row>
