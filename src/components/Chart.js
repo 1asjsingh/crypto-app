@@ -22,8 +22,11 @@ ChartJS.register(zoomPlugin);
 
 function Chart({ currency, coin, prediction }) {
   const [chartData, setChartData] = useState([]);
-  let [range, setRange] = useState((!prediction ? 1 : 365));
+  let [range, setRange] = useState(!prediction ? 1 : 365);
   const [loading, setLoading] = useState(true);
+
+  const [predictionPrices, setPredictionPrices] = useState([]);
+  const [predictionTimes, setPredictionTimes] = useState([]);
 
   if (prediction) {
     //setRange(365);
@@ -36,7 +39,20 @@ function Chart({ currency, coin, prediction }) {
         res = res.data;
 
         if (prediction) {
-          
+          let pred = [];
+
+          const connection = res.prices.slice(-8)[0]
+          pred = res.prices.splice(-7, 7);
+          pred.unshift(connection);
+
+
+          let price_data = pred.map((data) => {
+            let unix = new Date(data[0]);
+            unix = moment(unix).format("L HH:mm");
+            return { x: unix, y: data[1] };
+          });
+
+          setPredictionPrices(price_data);
         }
 
         setChartData(res);
@@ -44,7 +60,7 @@ function Chart({ currency, coin, prediction }) {
         setLoading(false);
         return res;
       } catch (e) {
-        alert(e);
+        console.error(e);
       }
     }
     getData();
@@ -61,7 +77,7 @@ function Chart({ currency, coin, prediction }) {
     }
   });
 
-  const prices = chartData.prices.map((data) => {
+  let prices = chartData.prices.map((data) => {
     return data[1];
   });
 
@@ -123,6 +139,14 @@ function Chart({ currency, coin, prediction }) {
         data: prices,
         borderColor: "rgb(60, 90, 214)",
         backgroundColor: "rgb(60, 90, 214, 0.3)",
+        pointRadius: 0,   
+        spanGaps: true
+      },
+      {
+        fill: true,
+        data: predictionPrices,
+        borderColor: "rgb(124,252,0)",
+        backgroundColor: "rgb(124, 252, 0, 0.3)",
         pointRadius: 0,
       },
     ],
@@ -132,34 +156,35 @@ function Chart({ currency, coin, prediction }) {
     <div>
       <Container>
         {!prediction && (
-        <Row>
-          <Col>
-            <Button className="w-100" onClick={() => setRange(1)}>
-              1D
-            </Button>
-          </Col>
+          <Row>
+            <Col>
+              <Button className="w-100" onClick={() => setRange(1)}>
+                1D
+              </Button>
+            </Col>
 
-          <Col>
-            <Button className="w-100" onClick={() => setRange(7)}>
-              7D
-            </Button>
-          </Col>
-          <Col>
-            <Button className="w-100" onClick={() => setRange(31)}>
-              1M
-            </Button>
-          </Col>
-          <Col>
-            <Button className="w-100" onClick={() => setRange(365)}>
-              1Y
-            </Button>
-          </Col>
-          <Col>
-            <Button className="w-100" onClick={() => setRange("max")}>
-              Max
-            </Button>
-          </Col>
-        </Row>)}
+            <Col>
+              <Button className="w-100" onClick={() => setRange(7)}>
+                7D
+              </Button>
+            </Col>
+            <Col>
+              <Button className="w-100" onClick={() => setRange(31)}>
+                1M
+              </Button>
+            </Col>
+            <Col>
+              <Button className="w-100" onClick={() => setRange(365)}>
+                1Y
+              </Button>
+            </Col>
+            <Col>
+              <Button className="w-100" onClick={() => setRange("max")}>
+                Max
+              </Button>
+            </Col>
+          </Row>
+        )}
 
         <div className="mt-4">
           <Row>
