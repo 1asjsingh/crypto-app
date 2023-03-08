@@ -228,7 +228,11 @@ function Portfolio() {
     <div>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Sell {coins1[sellIndex]}</Modal.Title>
+          <Modal.Title>
+            Sell{" "}
+            {coins1[sellIndex] &&
+              latestPrice.find(({ id }) => id === coins1[sellIndex]).name}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Container>
@@ -272,103 +276,98 @@ function Portfolio() {
 
         <Container>
           <Row className="portfolio-balance">
-              <h1>
-                {getSymbol()}
-                {profitBalance.toFixed(2)}
-              </h1>
-              <h4 style={{ color: "#a9a9a9" }}>
-                Available: {getSymbol()}
-                {userData.balance.toFixed(2)}
-              </h4>
-              <h4
-                style={{
-                  color:
-                    100 * ((profitBalance - 100000) / 100000) < 0
-                      ? "red"
-                      : "green",
-                }}
-              >
-                {(100 * ((profitBalance - 100000) / 100000)).toFixed(2)}%
-              </h4>
+            <h1>
+              {getSymbol()}
+              {profitBalance.toFixed(2)}
+            </h1>
+            <h4 style={{ color: "#a9a9a9" }}>
+              Available: {getSymbol()}
+              {userData.balance.toFixed(2)}
+            </h4>
+            <h4
+              style={{
+                color:
+                  100 * ((profitBalance - 100000) / 100000) < 0
+                    ? "red"
+                    : "green",
+              }}
+            >
+              {(100 * ((profitBalance - 100000) / 100000)).toFixed(2)}%
+            </h4>
           </Row>
         </Container>
         <Container>
           <Row className="portfolio-stats">
-              <Table
-                responsive
-                className="coin-table"
-                style={{ color: "white" }}
-              >
-                <thead>
-                  <tr>
-                    <th>Icon</th>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Holdings</th>
-                    <th>Average Price</th>
-                    <th>P/L ({getSymbol()})</th>
-                    <th>P/L (%)</th>
-                    <th>Sell</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {coins1.map((coin, i) => (
-                    <tr className="tableRow" key={`${coins1[i]}_${Date.now()}`}>
-                      <td onClick={() => navigate(`/${coins1[i]}`)}>
-                        <img
-                          style={{ objectFit: "contain", height: "50px" }}
-                          src={
-                            latestPrice.find(({ id }) => id === coins1[i]).image
-                          }
-                          alt="currency icon"
-                        />
-                      </td>
-                      <td onClick={() => navigate(`/${coins1[i]}`)}>
-                        {latestPrice.find(({ id }) => id === coins1[i]).name}
-                      </td>
-                      <td onClick={() => navigate(`/${coins1[i]}`)}>
-                        {quantity1[i]}
-                      </td>
-                      <td onClick={() => navigate(`/${coins1[i]}`)}>
-                        {getSymbol()}
-                        {total_price1[i].toFixed(2)}
-                      </td>
-                      <td onClick={() => navigate(`/${coins1[i]}`)}>
-                        {getSymbol()}
-                        {(total_price1[i] / quantity1[i]).toFixed(2)}
-                      </td>
-                      <td onClick={() => navigate(`/${coins1[i]}`)}>
-                        {getSymbol()}
-                        {(openPL1[i] - total_price1[i]).toFixed(2)}
-                      </td>
-                      <td
-                        onClick={() => navigate(`/${coins1[i]}`)}
-                        style={{
-                          color:
-                            100 *
-                              ((openPL1[i] - total_price1[i]) /
-                                total_price1[i]) <
-                            0
-                              ? "red"
-                              : "green",
-                        }}
-                      >
-                        {(
+            <Table responsive className="coin-table" style={{ color: "white" }}>
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Name</th>
+                  <th>Quantity</th>
+                  <th>Holdings</th>
+                  <th>Average Price</th>
+                  <th>P/L ({getSymbol()})</th>
+                  <th>P/L (%)</th>
+                  <th>Sell</th>
+                </tr>
+              </thead>
+              <tbody>
+                {coins1.map((coin, i) => (
+                  <tr className="tableRow" key={`${coins1[i]}_${Date.now()}`}>
+                    <td onClick={() => navigate(`/${coins1[i]}`)}>
+                      <img
+                        style={{ objectFit: "contain", height: "50px" }}
+                        src={
+                          latestPrice.find(({ id }) => id === coins1[i]).image
+                        }
+                        alt="currency icon"
+                      />
+                    </td>
+                    <td onClick={() => navigate(`/${coins1[i]}`)}>
+                      {latestPrice.find(({ id }) => id === coins1[i]).name}
+                    </td>
+                    <td onClick={() => navigate(`/${coins1[i]}`)}>
+                      {quantity1[i]}
+                    </td>
+                    <td onClick={() => navigate(`/${coins1[i]}`)}>
+                      {getSymbol()}
+                      {total_price1[i].toFixed(2)}
+                    </td>
+                    <td onClick={() => navigate(`/${coins1[i]}`)}>
+                      {getSymbol()}
+                      {(total_price1[i] / quantity1[i]).toFixed(2)}
+                    </td>
+                    <td onClick={() => navigate(`/${coins1[i]}`)}>
+                      {getSymbol()}
+                      {(openPL1[i] - total_price1[i]).toFixed(2)}
+                    </td>
+                    <td
+                      onClick={() => navigate(`/${coins1[i]}`)}
+                      style={{
+                        color:
                           100 *
-                          ((openPL1[i] - total_price1[i]) / total_price1[i])
-                        ).toFixed(2)}
-                        %
-                      </td>
-                      <td>
-                        <Button variant="primary" onClick={() => handleShow(i)}>
-                          Sell
-                        </Button>{" "}
-                        {/*fixed infinite loop re renders*/}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+                            ((openPL1[i] - total_price1[i]) / total_price1[i]) <
+                          0
+                            ? "red"
+                            : "green",
+                      }}
+                    >
+                      {(
+                        100 *
+                        ((openPL1[i] - total_price1[i]) / total_price1[i])
+                      ).toFixed(2)}
+                      %
+                    </td>
+                    <td>
+                      <Button variant="primary" onClick={() => handleShow(i)}>
+                        Sell
+                      </Button>{" "}
+                      {/*fixed infinite loop re renders*/}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
           </Row>
         </Container>
       </Container>
