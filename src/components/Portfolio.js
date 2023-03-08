@@ -13,7 +13,7 @@ import {
 import Loading from "./Loading";
 import axios from "./axios";
 import { getCurrencies } from "./requests.js";
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 
@@ -231,10 +231,10 @@ function Portfolio() {
           <Modal.Title>Sell {coins1[sellIndex]}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="container">
-            <div className="row">
-              <div className="col">Quantity</div>
-              <div className="col">
+          <Container>
+            <Row>
+              <Col>Quantity</Col>
+              <Col>
                 <input
                   className="form-control"
                   type="number"
@@ -245,16 +245,16 @@ function Portfolio() {
                     setSellQuantity(event.target.value);
                   }}
                 />
-              </div>
-            </div>
+              </Col>
+            </Row>
 
-            <div className="row">
-              <div className="col">Total ({getSymbol()})</div>
-              <div className="col">
+            <Row>
+              <Col>Total ({getSymbol()})</Col>
+              <Col>
                 <input className="form-control" value={sellPrice} disabled />
-              </div>
-            </div>
-          </div>
+              </Col>
+            </Row>
+          </Container>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -265,14 +265,13 @@ function Portfolio() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div className="container">
-        <div className="container">
+      <Container>
+        <Container>
           <h1>Portfolio</h1>
-        </div>
+        </Container>
 
-        <div className="container">
-          <div className="row">
-            <div className="portfolio-balance">
+        <Container>
+          <Row className="portfolio-balance">
               <h1>
                 {getSymbol()}
                 {profitBalance.toFixed(2)}
@@ -291,12 +290,10 @@ function Portfolio() {
               >
                 {(100 * ((profitBalance - 100000) / 100000)).toFixed(2)}%
               </h4>
-            </div>
-          </div>
-        </div>
-        <div className="container">
-          <div className="row">
-            <div className="portfolio-stats">
+          </Row>
+        </Container>
+        <Container>
+          <Row className="portfolio-stats">
               <Table
                 responsive
                 className="coin-table"
@@ -372,10 +369,9 @@ function Portfolio() {
                   ))}
                 </tbody>
               </Table>
-            </div>
-          </div>
-        </div>
-      </div>
+          </Row>
+        </Container>
+      </Container>
     </div>
   );
 }
