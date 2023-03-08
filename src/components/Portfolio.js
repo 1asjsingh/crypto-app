@@ -24,6 +24,7 @@ function Portfolio() {
   const [loading, setLoading] = useState(true);
 
   const [coins1, setCoins] = useState([]);
+  const [profitBalance, setProfitBalance] = useState([]);
   const [quantity1, setQuantity] = useState([]);
   const [total_price1, setTotal_Price] = useState([]);
   const [openPL1, setOpenPL] = useState([]);
@@ -61,16 +62,13 @@ function Portfolio() {
           return new Date(x.time) - new Date(y.time);
         });
 
-        console.log(transHistory);
-        //const transHistory = [...transHistory];
-
         let coins = [];
         let quantity = [];
         let total_price = [];
+        let openPL = [];
 
         let docIndex = 0;
         let indexRemove = [];
-        console.log(transHistory);
         transHistory.forEach((doc) => {
           //FIFO
           if (parseFloat(doc.quantity) < 0) {
@@ -83,9 +81,8 @@ function Portfolio() {
                 absVal -= indexQuantity;
                 transHistory[index]["coin"] = "SOLD";
               } else if (indexQuantity > 0 && absVal < indexQuantity) {
-                transHistory[index]["quantity"] = (
-                  parseFloat(transHistory[index]["quantity"]) - absVal
-                ).toFixed(2); //FLOATING POINT ERROR FIX
+                transHistory[index]["quantity"] =
+                  parseFloat(transHistory[index]["quantity"]) - absVal; //FLOATING POINT ERROR FIX
                 absVal -= indexQuantity;
               }
             }
@@ -103,42 +100,43 @@ function Portfolio() {
           transHistory.splice(indexRemove[i], 1);
         }
 
+        let res2 = await axios.get(getCurrencies(getLocalCurr()));
+        res2 = res2.data;
+
         transHistory.forEach((doc) => {
-          console.log(doc.quantity * doc.price);
+          const current_price = res2.find(
+            ({ id }) => id === doc.coin
+          ).current_price;
           if (coins.includes(doc.coin)) {
             //not working
             const i = coins.indexOf(doc.coin);
             quantity[i] += parseFloat(doc.quantity);
             total_price[i] += parseFloat(doc.price) * parseFloat(doc.quantity); // total BUY price not current
+            openPL[i] += current_price * parseFloat(doc.quantity);
           } else {
             coins.push(doc.coin);
             quantity.push(parseFloat(doc.quantity));
             total_price.push(parseFloat(doc.price) * parseFloat(doc.quantity));
+            openPL.push(current_price * parseFloat(doc.quantity));
           }
         });
-        setCoins(coins);
-        setQuantity(quantity);
-        setTotal_Price(total_price);
 
-        let res2 = await axios.get(getCurrencies(getLocalCurr()));
-        res2 = res2.data;
-
-        let openPL = [];
-        coins.forEach((coin) => {
-          const i = coins.indexOf(coin);
-          const current_price = res2.find(
-            ({ id }) => id === coin
-          ).current_price;
-          const profit = (
-            (current_price - total_price[i] / quantity[i]) *
-            quantity[i]
-          ).toFixed(2);
-          console.log(profit);
-          openPL.push(profit);
+        let profits = 0;
+        coins.forEach(function (coin, i) {
+          profits += openPL[i] - total_price[i];
         });
 
+        const total_price_sum = total_price.reduce((sum, x) => {
+          return sum + x;
+        });
+
+        setCoins(coins);
+        setProfitBalance(res.data().balance + total_price_sum + profits);
+        setQuantity(quantity);
+        setTotal_Price(total_price);
         setLatestPrice(res2);
         setOpenPL(openPL);
+
         setLoading(false);
       } catch (e) {
         console.error(e);
@@ -161,10 +159,8 @@ function Portfolio() {
   useEffect(() => {
     if (sellQuantity) {
       setSellPrice(
-        (
-          sellQuantity *
+        sellQuantity *
           latestPrice.find(({ id }) => id === coins1[sellIndex]).current_price
-        ).toFixed(2)
       ); //------------------------------------------------------
     } else {
       setSellPrice(0);
@@ -176,8 +172,8 @@ function Portfolio() {
       await getDoc(doc(db, "crypto-accounts", authedUser.uid))
     ).data();
 
-    if (sellPrice === 0 || sellPrice < 0.01) {
-      return alert("Please choose a quantity larger than 0.01");
+    if (sellPrice === 0 || sellPrice < 0) {
+      return alert("Please choose a quantity larger than 0");
     }
     if (sellQuantity > quantity1[sellIndex]) {
       return alert("Not enough of this coin owned");
@@ -207,7 +203,7 @@ function Portfolio() {
           ),
           {
             coin: coins1[sellIndex],
-            quantity: parseFloat(-sellQuantity),
+            quantity: -parseFloat(sellQuantity),
             price: latestPrice.find(({ id }) => id === coins1[sellIndex])
               .current_price,
             time: Date(), //-------------
@@ -277,22 +273,23 @@ function Portfolio() {
         <div className="container">
           <div className="row">
             <div className="portfolio-balance">
-              <h1>{getSymbol()}</h1>
-              <h3>
+              <h1>
+                {getSymbol()}
+                {profitBalance.toFixed(2)}
+              </h1>
+              <h4 style={{ color: "#a9a9a9" }}>
                 Available: {getSymbol()}
-                {userData.balance.toLocaleString("en-GB", {
-                  maximumFractionDigits: 20,
-                })}
-              </h3>
+                {userData.balance.toFixed(2)}
+              </h4>
               <h4
                 style={{
                   color:
-                    100 * ((userData.balance - 100000) / 100000) < 0
+                    100 * ((profitBalance - 100000) / 100000) < 0
                       ? "red"
                       : "green",
                 }}
               >
-                {(100 * ((userData.balance - 100000) / 100000)).toFixed(2)}%
+                {(100 * ((profitBalance - 100000) / 100000)).toFixed(2)}%
               </h4>
             </div>
           </div>
@@ -310,6 +307,7 @@ function Portfolio() {
                     <th>Icon</th>
                     <th>Name</th>
                     <th>Quantity</th>
+                    <th>Holdings</th>
                     <th>Average Price</th>
                     <th>P/L ({getSymbol()})</th>
                     <th>P/L (%)</th>
@@ -318,7 +316,7 @@ function Portfolio() {
                 </thead>
                 <tbody>
                   {coins1.map((coin, i) => (
-                    <tr className="tableRow" key={coins1[i]}>
+                    <tr className="tableRow" key={`${coins1[i]}_${Date.now()}`}>
                       <td onClick={() => navigate(`/${coins1[i]}`)}>
                         <img
                           style={{ objectFit: "contain", height: "50px" }}
@@ -336,28 +334,33 @@ function Portfolio() {
                       </td>
                       <td onClick={() => navigate(`/${coins1[i]}`)}>
                         {getSymbol()}
-                        {(total_price1[i] / quantity1[i]).toLocaleString(
-                          "en-GB",
-                          {
-                            maximumFractionDigits: 20,
-                          }
-                        )}
+                        {total_price1[i].toFixed(2)}
                       </td>
                       <td onClick={() => navigate(`/${coins1[i]}`)}>
                         {getSymbol()}
-                        {openPL1[i]}
+                        {(total_price1[i] / quantity1[i]).toFixed(2)}
+                      </td>
+                      <td onClick={() => navigate(`/${coins1[i]}`)}>
+                        {getSymbol()}
+                        {(openPL1[i] - total_price1[i]).toFixed(2)}
                       </td>
                       <td
                         onClick={() => navigate(`/${coins1[i]}`)}
                         style={{
                           color:
-                            (100 * (openPL1[i] / total_price1[i])).toFixed(2) <
+                            100 *
+                              ((openPL1[i] - total_price1[i]) /
+                                total_price1[i]) <
                             0
                               ? "red"
                               : "green",
                         }}
                       >
-                        {(100 * (openPL1[i] / total_price1[i])).toFixed(2)}%
+                        {(
+                          100 *
+                          ((openPL1[i] - total_price1[i]) / total_price1[i])
+                        ).toFixed(2)}
+                        %
                       </td>
                       <td>
                         <Button variant="primary" onClick={() => handleShow(i)}>

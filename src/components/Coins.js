@@ -235,7 +235,7 @@ function Coins() {
                   .map((coin) => (
                     <tr
                       className="tableRow text-center"
-                      key={coin.current_price}
+                      key={`${coin.symbol}_${Date.now()}`}
                       onClick={() => navigate(`/${coin.id}`)}
                     >
                       <td>

@@ -58,7 +58,6 @@ function CoinDetails() {
       try {
         const request = await axios.get(getDetails(coin));
         setDetails(request.data);
-        console.log(request.data);
         setLoading(false);
         return request;
       } catch (e) {
@@ -74,10 +73,9 @@ function CoinDetails() {
 
   useEffect(() => {
     if (quantity && details) {
+      console.log(1)
       setCost(
-        (quantity * details.market_data.current_price[getLocalCurr()]).toFixed(
-          2
-        )
+        (quantity * details.market_data.current_price[getLocalCurr()])
       );
     } else {
       setCost(0);
@@ -112,10 +110,10 @@ function CoinDetails() {
           doc(db, "crypto-accounts", authedUser.uid, "transactions", "1"),
           {
             coin: coin,
-            quantity: cost / details.market_data.current_price[getLocalCurr()],
+            quantity: parseFloat(quantity),
             price: details.market_data.current_price[getLocalCurr()],
             time: Date(), //-------------
-          } //quantity: parseFloat(quantity), MATH.CEIL?
+          }
         );
       } else {
         const transactionId =
@@ -135,10 +133,10 @@ function CoinDetails() {
           ),
           {
             coin: coin,
-            quantity: cost / details.market_data.current_price[getLocalCurr()],
+            quantity: parseFloat(quantity),
             price: details.market_data.current_price[getLocalCurr()],
             time: Date(), //-------------
-          } //quantity: parseFloat(quantity), MATH.CEIL?
+          }
         );
       }
       await updateDoc(doc(db, "crypto-accounts", authedUser.uid), {
@@ -168,11 +166,11 @@ function CoinDetails() {
                 <input
                   className="form-control"
                   type="number"
-                  min="0"
+                  min="0" 
                   id="quantity"
                   name="quantity"
                   onChange={(event) => {
-                    setQuantity(event.target.value);
+                    setQuantity(parseFloat(event.target.value));
                   }}
                 />
               </Col>

@@ -72,7 +72,7 @@ function History() {
           <tbody>
             {transactions.map((transaction) => (
               <tr
-                key={transaction.price}
+                key={transaction.time}
                 className="text-center"
                 onClick={() => navigate(`/${transaction.coin}`)}
               >
@@ -94,7 +94,8 @@ function History() {
                   })}
                 </td>
                 <td>
-                  {getSymbol()}{transaction.price.toLocaleString("en-GB", {
+                  {getSymbol()}
+                  {transaction.price.toLocaleString("en-GB", {
                     maximumFractionDigits: 20,
                   })}
                 </td>
