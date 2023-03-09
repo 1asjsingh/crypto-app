@@ -3,15 +3,24 @@ import { useNavigate, Link } from "react-router-dom";
 import "./Register.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { db } from "../components/firebase";
-import { setDoc, doc } from "firebase/firestore";
+import {
+  setDoc,
+  doc,
+  collection,
+  getDocs,
+  where,
+  query,
+} from "firebase/firestore";
 import { UserContext } from "../contexts/UserContext";
+import { Container, Row, Form, Button, Alert } from "react-bootstrap";
 
 function Register() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState();
-  const [pass, setPass] = useState();
-  const [pass2, setPass2] = useState();
-  const [error, setError] = useState();
+  const [email, setEmail] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [pass, setPass] = useState(null);
+  const [pass2, setPass2] = useState(null);
+  const [error, setError] = useState(null);
   const { register } = useAuthentication();
   const { setCurrency } = useContext(UserContext);
   const currencies = ["usd$", "cad$", "gbp£"];
@@ -20,60 +29,90 @@ function Register() {
   async function handleRegister(e) {
     try {
       e.preventDefault();
+
       if (pass !== pass2) {
         setError("Passwords do not match");
         return;
       }
-      const user = await register(email, pass);
-      await setDoc(doc(db, "crypto-accounts", user.user.uid), {
-        balance: 100000,
-        currency: RegCurr,
-        score: 0,
-      });
-      setCurrency(RegCurr);
-      setError();
-      navigate(`/`);
+
+      const usernameList = await getDocs(
+        query(
+          collection(db, "crypto-leaderboard"),
+          where("usernameLC", "==", username.toLowerCase())
+        )
+      );
+
+      if (usernameList.empty) {
+        const user = await register(email, pass);
+
+        await setDoc(doc(db, "crypto-accounts", user.user.uid), {
+          balance: 100000,
+          currency: RegCurr,
+          username: username,
+        });
+
+        await setDoc(doc(db, "crypto-leaderboard", user.user.uid), {
+          username: username,
+          usernameLC: username.toLowerCase(),
+          currency: RegCurr,
+          score: 0,
+          PL: 0,
+        });
+
+        setCurrency(RegCurr);
+        setError();
+        navigate(`/`);
+      } else {
+        setError("Username already exists");
+        return;
+      }
     } catch (e) {
       if ("auth/email-already-in-use" === String(e.code)) {
         setError("This email already exists");
-      }
-      else if ("auth/weak-password" === String(e.code)) {
+      } else if ("auth/weak-password" === String(e.code)) {
         setError("Password is too weak");
+      } else if ("auth/invalid-email" === String(e.code)) {
+        setError("Invalid email");
+      } else {
+        setError(e.code);
       }
-      else {
-        setError(e.code)
-      }
-      
     }
   }
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="register-card">
+    <Container>
+      <Row className="round-box">
+        <Row>
           <h2>Register</h2>
-          <form onSubmit={handleRegister}>
-            <input
+        </Row>
+        <Row>
+          <Form onSubmit={handleRegister}>
+            <Form.Control
               type="email"
-              className="form-control"
               placeholder="Email Address"
               onChange={(event) => {
                 setEmail(event.target.value);
               }}
               required
             />
-            <input
+            <Form.Control
+              type="text"
+              placeholder="Username"
+              onChange={(event) => {
+                setUsername(event.target.value);
+              }}
+              required
+            />
+            <Form.Control
               type="password"
-              className="form-control"
               placeholder="Password"
               onChange={(event) => {
                 setPass(event.target.value);
               }}
               required
             />
-            <input
+            <Form.Control
               type="password"
-              className="form-control"
               placeholder="Retype Password"
               onChange={(event) => {
                 setPass2(event.target.value);
@@ -81,8 +120,8 @@ function Register() {
               required
             />
 
-            <select
-              className="form-control curr-dropdown"
+            <Form.Select
+              className="mb-2"
               onChange={(event) => {
                 setRegCurr(event.target.value);
               }}
@@ -92,21 +131,23 @@ function Register() {
                   {curr.toUpperCase()}
                 </option>
               ))}
-            </select>
+            </Form.Select>
 
-            {error && (
-              <div className="alert alert-danger" role="alert">
-                {error}
-              </div>
-            )}
-            <Link to="/signin">Already registered?</Link>
-            <button type="submit" className="btn register-button">
-              Register
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+            {error && <Alert variant={"danger"}>{error}</Alert>}
+            <Form.Group>
+              <Link className="ms-1" to="/signin">
+                Already registered?
+              </Link>
+            </Form.Group>
+            <Form.Group>
+              <Button type="submit" className="mt-1 w-100">
+                Register
+              </Button>
+            </Form.Group>
+          </Form>
+        </Row>
+      </Row>
+    </Container>
   );
 }
 

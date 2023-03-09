@@ -1,6 +1,14 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { Col, Container, Row, Button, Alert } from "react-bootstrap";
+import { Col, Container, Row, Button, Alert, Table } from "react-bootstrap";
 import axios from "./axios";
 import Candlestick from "./Candlestick";
 import { db } from "./firebase";
@@ -22,7 +30,7 @@ function Game() {
   const [answer, setAnswer] = useState([]);
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState(null);
-  const [gameOver, setGameOver] = useState(false);
+  const [highScores, setHighScores] = useState(false);
   //const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +38,8 @@ function Game() {
     return localStorage.getItem("currency").substring(0, 3);
   };
 
-  useEffect(() => { //do i need useeffect
+  useEffect(() => {
+    //do i need useeffect
     const getCandleData = async (coin) => {
       // MAKE IT RETURN DATA ?
       try {
@@ -42,9 +51,27 @@ function Game() {
         setAnswer(randomWindow);
         setCandleData(randomWindow.slice(0, -7));
 
+        const scoresRes = await getDocs(
+          query(collection(db, "crypto-leaderboard"), where("score", ">", 0))
+        );
+
+        let scores = scoresRes.docs.map((data) => ({
+          ...data.data(),
+        }));
+
+        scores.sort(function (x, y) {
+          return y.score - x.score;
+        });
+
+        setHighScores(scores.slice(0, 10));
+
         setLoading(false);
       } catch (e) {
-        alert(e);
+        if (e.code === "ERR_NETWORK") {
+          alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+        } else {
+          console.error(e);
+        }
       }
     };
     if (answered === false) {
@@ -91,7 +118,7 @@ function Game() {
     if (correct) {
       setScore(score + 1);
     } else {
-        handleHighScore(score);
+      handleHighScore(score);
       setScore(0);
     }
     setCorrect(null);
@@ -99,11 +126,13 @@ function Game() {
 
   async function handleHighScore(currScore) {
     try {
-      let res = await getDoc(doc(db, "crypto-accounts", authedUser.uid));
+      let res = await getDoc(doc(db, "crypto-leaderboard", authedUser.uid));
       res = res.data();
 
       if (parseInt(res.score) < currScore) {
-        await updateDoc(doc(db, "crypto-accounts", authedUser.uid), {score: currScore});
+        await updateDoc(doc(db, "crypto-leaderboard", authedUser.uid), {
+          score: currScore,
+        });
       }
     } catch (e) {
       alert(e);
@@ -156,10 +185,33 @@ function Game() {
         </Row>
       )}
       {answered && (
-        <Button className="w-100" onClick={() => handleNext()}>
-          Next
-        </Button>
+        <Row className="round-box">
+          <Button className="w-100" onClick={() => handleNext()}>
+            Next
+          </Button>
+        </Row>
       )}
+      <Row>
+        <h2>Leaderboard</h2>
+      </Row>
+      <Row>
+        <Table responsive className="coin-table" style={{ color: "white" }}>
+          <thead>
+            <tr className="text-center">
+              <th>Player</th>
+              <th>High Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {highScores.map((score) => (
+              <tr className="text-center" key={score.username}>
+                <td>{score.username}</td>
+                <td>{score.score}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Row>
     </Container>
   );
 }

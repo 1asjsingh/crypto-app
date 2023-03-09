@@ -126,9 +126,12 @@ function Portfolio() {
           profits += openPL[i] - total_price[i];
         });
 
-        const total_price_sum = total_price.reduce((sum, x) => {
-          return sum + x;
-        });
+        let total_price_sum = 0;
+        if (total_price.length > 0) {
+          total_price_sum = total_price.reduce((sum, x) => {
+            return sum + x;
+          });
+        }
 
         setCoins(coins);
         setProfitBalance(res.data().balance + total_price_sum + profits);
@@ -136,6 +139,10 @@ function Portfolio() {
         setTotal_Price(total_price);
         setLatestPrice(res2);
         setOpenPL(openPL);
+
+        await updateDoc(doc(db, "crypto-leaderboard", authedUser.uid), {
+          PL: profits,
+        });
 
         setLoading(false);
       } catch (e) {
@@ -165,7 +172,7 @@ function Portfolio() {
     } else {
       setSellPrice(0);
     }
-  }, [sellQuantity]);
+  }, [sellQuantity, latestPrice, coins1, sellIndex]);
 
   const handleSell = async () => {
     const userData = (
