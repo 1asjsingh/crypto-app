@@ -34,7 +34,9 @@ function Leaderboard() {
           return y.score - x.score;
         });
 
-        let plFiltered = pl.filter((curr) => {return curr.PL !== 0})
+        let plFiltered = pl.filter((curr) => {
+          return curr.PL !== 0;
+        });
 
         setLeaderboard(plFiltered.slice(0, 10));
 
@@ -66,17 +68,17 @@ function Leaderboard() {
             {leaderboard.map((score) => (
               <tr className="text-center" key={score.username}>
                 <td>{score.username}</td>
-                <td>{getLocalSymbol()}{score.PL}</td>
+                <td>
+                  {getLocalSymbol()}
+                  {score.PL}
+                </td>
                 <td
-              style={{
-                color:
-                  100 * ((score.PL) / 100000) < 0
-                    ? "red"
-                    : "green",
-              }}
-            >
-              {(100 * ((score.PL) / 100000)).toFixed(2)}%
-            </td>
+                  style={{
+                    color: 100 * (score.PL / 100000) < 0 ? "red" : "green",
+                  }}
+                >
+                  {(100 * (score.PL / 100000)).toFixed(2)}%
+                </td>
               </tr>
             ))}
           </tbody>

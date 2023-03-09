@@ -31,7 +31,7 @@ function Game() {
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState(null);
   const [highScores, setHighScores] = useState(false);
-  //const [feedback, setFeedback] = useState(null);
+  const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const getLocalCurr = () => {
@@ -39,9 +39,7 @@ function Game() {
   };
 
   useEffect(() => {
-    //do i need useeffect
     const getCandleData = async (coin) => {
-      // MAKE IT RETURN DATA ?
       try {
         const res = await axios.get(
           getCandleChart(coin, getLocalCurr(), "max")
@@ -90,25 +88,30 @@ function Game() {
     const currClose = answer[answer.length - 1][4];
     //const currOpen = answer[answer.length - 1][1]
 
-    const constraint_range = Math.abs(prevOpen - prevClose) * 0.5;
-    console.log(constraint_range);
+    const constraint_range = Math.abs(prevOpen - prevClose); // * 0.5;
+    let correct;
+
+    if (Math.abs(prevClose - currClose) <= constraint_range) {
+      correct = "S";
+      setFeedback("Answer: Sideways");
+    }
+    if (currClose < prevClose - constraint_range) {
+      correct = "L";
+      setFeedback("Answer: Lower");
+    }
+    if (currClose > prevClose + constraint_range) {
+      correct = "H";
+      setFeedback("Answer: Higher");
+    }
 
     //think of new way, if open inside previous but BIG MOVE up on close then?
-    if (selected === "S") {
-      console.log(Math.abs(prevClose - currClose));
-      if (Math.abs(prevClose - currClose) <= constraint_range) {
-        return setCorrect(true);
-      }
-      return setCorrect(false);
-    } else if (selected === "L") {
-      if (currClose < prevClose - constraint_range) {
-        return setCorrect(true);
-      }
-      return setCorrect(false);
-    } else if (selected === "H") {
-      if (currClose > prevClose + constraint_range) {
-        return setCorrect(true);
-      }
+    if (selected === "S" && correct === "S") {
+      return setCorrect(true);
+    } else if (selected === "L" && correct === "L") {
+      return setCorrect(true);
+    } else if (selected === "H" && correct === "H") {
+      return setCorrect(true);
+    } else {
       return setCorrect(false);
     }
   };
@@ -145,6 +148,7 @@ function Game() {
     <Container>
       <Row>
         <h1>Chart Game</h1>
+        <h6>Guess the closing price of the candle 7 candles ahead</h6>
         <h2 className="text-center">{currentDisplay}</h2>
         <h2 className="text-center">Score: {score}</h2>
         {correct && (
@@ -154,7 +158,7 @@ function Game() {
         )}
         {correct === false && (
           <Alert variant="danger" className="text-center">
-            Wrong! Game Over
+            Wrong! Game Over {feedback}
           </Alert>
         )}
       </Row>
