@@ -61,14 +61,13 @@ function CoinDetails() {
         setLoading(false);
         return request;
       } catch (e) {
-        if (parseInt(e.response.status) === 404) {
+        /*if (parseInt(e.response.status) === 404) {
           navigate("/notfound");
+        } else {*/
+        if (e.code === "ERR_NETWORK") {
+          alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
         } else {
-          if (e.code === "ERR_NETWORK") {
-            alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
-          } else {
-            console.error(e);
-          }
+          console.error(e);
         }
       }
     };
@@ -355,9 +354,10 @@ function CoinDetails() {
             </p>
           </Col>
         </Row>
+        {details.description.en.length > 2 && (
         <Row className="coin-description round-box">
           <div dangerouslySetInnerHTML={{ __html: details.description.en }} />
-        </Row>
+        </Row>)}
         <Row className="coin-chart round-box">
           <h3>Prediction</h3>
           <Chart currency={getLocalCurr()} coin={coin} prediction={true} />
