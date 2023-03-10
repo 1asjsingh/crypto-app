@@ -146,7 +146,11 @@ function Portfolio() {
 
         setLoading(false);
       } catch (e) {
-        console.error(e);
+        if (e.code === "ERR_NETWORK") {
+          alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+        } else {
+          console.error(e);
+        }
       }
     }
 

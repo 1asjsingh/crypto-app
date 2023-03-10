@@ -41,10 +41,9 @@ function Chart({ currency, coin, prediction }) {
         if (prediction) {
           let pred = [];
 
-          const connection = res.prices.slice(-8)[0]
+          const connection = res.prices.slice(-8)[0];
           pred = res.prices.splice(-7, 7);
           pred.unshift(connection);
-
 
           let price_data = pred.map((data) => {
             let unix = new Date(data[0]);
@@ -60,7 +59,11 @@ function Chart({ currency, coin, prediction }) {
         setLoading(false);
         return res;
       } catch (e) {
-        console.error(e);
+        if (e.code === "ERR_NETWORK") {
+          alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+        } else {
+          console.error(e);
+        }
       }
     }
     getData();
@@ -107,7 +110,7 @@ function Chart({ currency, coin, prediction }) {
           mode: "x",
         },
       },
-    }
+    };
   }
 
   const options = {
@@ -134,7 +137,7 @@ function Chart({ currency, coin, prediction }) {
       intersect: false,
       axis: "x",
     },
-    plugins: zoomOptions
+    plugins: zoomOptions,
   };
 
   const data = {
@@ -145,8 +148,8 @@ function Chart({ currency, coin, prediction }) {
         data: prices,
         borderColor: "rgb(60, 90, 214)",
         backgroundColor: "rgb(60, 90, 214, 0.3)",
-        pointRadius: 0,   
-        spanGaps: true
+        pointRadius: 0,
+        spanGaps: true,
       },
       {
         fill: true,

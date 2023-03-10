@@ -64,7 +64,11 @@ function CoinDetails() {
         if (parseInt(e.response.status) === 404) {
           navigate("/notfound");
         } else {
-          alert(e);
+          if (e.code === "ERR_NETWORK") {
+            alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+          } else {
+            console.error(e);
+          }
         }
       }
     };
@@ -73,10 +77,8 @@ function CoinDetails() {
 
   useEffect(() => {
     if (quantity && details) {
-      console.log(1)
-      setCost(
-        (quantity * details.market_data.current_price[getLocalCurr()])
-      );
+      console.log(1);
+      setCost(quantity * details.market_data.current_price[getLocalCurr()]);
     } else {
       setCost(0);
     }
@@ -166,7 +168,7 @@ function CoinDetails() {
                 <input
                   className="form-control"
                   type="number"
-                  min="0" 
+                  min="0"
                   id="quantity"
                   name="quantity"
                   onChange={(event) => {

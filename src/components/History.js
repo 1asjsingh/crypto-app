@@ -43,7 +43,7 @@ function History() {
         setCoinData(coins.data);
         setLoading(false);
       } catch (e) {
-        alert(e);
+        console.error(e);
       }
     }
 
