@@ -4,27 +4,30 @@ import "./SignIn.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { db } from "../components/firebase";
 import { getDoc, doc } from "firebase/firestore";
+import { Alert, Button, Container, Row, Form } from "react-bootstrap";
 
 function SignIn() {
   const navigate = useNavigate();
   const [email, setEmail] = useState();
   const [pass, setPass] = useState();
   const [error, setError] = useState();
-  const { signIn } = useAuthentication();
+  const { signIn, authedUser } = useAuthentication();
 
   async function handleSignIn(e) {
     try {
-      e.preventDefault();
-      const user = await signIn(email, pass);
-      const userData = await getDoc(doc(db, "crypto-accounts", user.user.uid));
-      if (userData.exists()) {
-        //setCurrency(userData.data().currency);
-        localStorage.setItem("currency", userData.data().currency);
+      if (authedUser) {
+        alert("You are already logged in");
+        navigate(`/`);
       } else {
-        setError("An error occured"); //CHANGE-----------------------
+        e.preventDefault();
+        const user = await signIn(email, pass);
+        const userData = await getDoc(
+          doc(db, "crypto-accounts", user.user.uid)
+        );
+        localStorage.setItem("currency", userData.data().currency);
+        setError();
+        navigate(`/`);
       }
-      setError();
-      navigate(`/`);
     } catch (e) {
       if ("auth/user-not-found" === String(e.code)) {
         setError("Email not found. Please register");
@@ -37,42 +40,44 @@ function SignIn() {
   }
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="signin-card">
+    <Container>
+      <Row className="round-box">
+        <Row>
           <h2>Sign In</h2>
-          <form onSubmit={handleSignIn}>
-            <input
+        </Row>
+        <Row>
+          <Form onSubmit={handleSignIn}>
+            <Form.Control
               type="email"
-              className="form-control"
               placeholder="Email Address"
               onChange={(event) => {
                 setEmail(event.target.value);
               }}
               required
             />
-            <input
+            <Form.Control
               type="password"
-              className="form-control"
               placeholder="Password"
               onChange={(event) => {
                 setPass(event.target.value);
               }}
               required
             />
-            {error && (
-              <div className="alert alert-danger" role="alert">
-                {error}
-              </div>
-            )}
-            <Link to="/register">Don't have an account?</Link>
-            <button type="submit" className="btn signin-button">
-              Sign In
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+            {error && <Alert variant={"danger"}>{error}</Alert>}
+            <Form.Group>
+              <Link className="ms-1" to="/register">
+                Don't have an account?
+              </Link>
+            </Form.Group>
+            <Form.Group>
+              <Button type="submit" className="mt-1 w-100">
+                Sign In
+              </Button>
+            </Form.Group>
+          </Form>
+        </Row>
+      </Row>
+    </Container>
   );
 }
 

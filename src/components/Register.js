@@ -20,49 +20,54 @@ function Register() {
   const [pass, setPass] = useState(null);
   const [pass2, setPass2] = useState(null);
   const [error, setError] = useState(null);
-  const { register } = useAuthentication();
+  const { register, authedUser } = useAuthentication();
   const currencies = ["usd$", "cad$", "gbp£"];
   const [RegCurr, setRegCurr] = useState(currencies[0]);
 
   async function handleRegister(e) {
     try {
-      e.preventDefault();
-
-      if (pass !== pass2) {
-        setError("Passwords do not match");
-        return;
-      }
-
-      const usernameList = await getDocs(
-        query(
-          collection(db, "crypto-leaderboard"),
-          where("usernameLC", "==", username.toLowerCase())
-        )
-      );
-
-      if (usernameList.empty) {
-        const user = await register(email, pass);
-
-        await setDoc(doc(db, "crypto-accounts", user.user.uid), {
-          balance: 100000,
-          currency: RegCurr,
-          username: username,
-        });
-
-        await setDoc(doc(db, "crypto-leaderboard", user.user.uid), {
-          username: username,
-          usernameLC: username.toLowerCase(),
-          currency: RegCurr,
-          score: 0,
-          PL: 0,
-        });
-
-        localStorage.setItem("currency", RegCurr);
-        setError();
+      if (authedUser) {
+        alert("You are already logged in");
         navigate(`/`);
       } else {
-        setError("Username already exists");
-        return;
+        e.preventDefault();
+
+        if (pass !== pass2) {
+          setError("Passwords do not match");
+          return;
+        }
+
+        const usernameList = await getDocs(
+          query(
+            collection(db, "crypto-leaderboard"),
+            where("usernameLC", "==", username.toLowerCase())
+          )
+        );
+
+        if (usernameList.empty) {
+          const user = await register(email, pass);
+
+          await setDoc(doc(db, "crypto-accounts", user.user.uid), {
+            balance: 100000,
+            currency: RegCurr,
+            username: username,
+          });
+
+          await setDoc(doc(db, "crypto-leaderboard", user.user.uid), {
+            username: username,
+            usernameLC: username.toLowerCase(),
+            currency: RegCurr,
+            score: 0,
+            PL: 0,
+          });
+
+          localStorage.setItem("currency", RegCurr);
+          setError();
+          navigate(`/`);
+        } else {
+          setError("Username already exists");
+          return;
+        }
       }
     } catch (e) {
       if ("auth/email-already-in-use" === String(e.code)) {
