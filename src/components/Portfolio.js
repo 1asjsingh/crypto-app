@@ -283,6 +283,7 @@ function Portfolio() {
 
         <Container>
           <Row className="portfolio-balance">
+            <h5>Hi, {userData.username}</h5>
             <h1>
               {getSymbol()}
               {profitBalance.toFixed(2)}

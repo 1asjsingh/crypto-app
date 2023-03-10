@@ -151,17 +151,22 @@ function Game() {
         <h6>Guess the closing price of the candle 7 candles ahead</h6>
         <h2 className="text-center">{currentDisplay}</h2>
         <h2 className="text-center">Score: {score}</h2>
-        {correct && (
+      </Row>
+      {correct && (
+        <Row>
           <Alert variant="success" className="text-center">
             Correct! Well done
           </Alert>
-        )}
-        {correct === false && (
+        </Row>
+      )}
+      {correct === false && (
+        <Row>
           <Alert variant="danger" className="text-center">
             Wrong! Game Over {feedback}
           </Alert>
-        )}
-      </Row>
+        </Row>
+      )}
+
       <Row className="round-box">
         <Candlestick
           currency={getLocalCurr()}
