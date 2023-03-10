@@ -41,7 +41,11 @@ function Coins() {
         );
         setCoins(res.data);
       } catch (e) {
-        alert(e);
+        if (e.code === "ERR_NETWORK") {
+          alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+        } else {
+          console.error(e);
+        }
       }
     }
     getData();

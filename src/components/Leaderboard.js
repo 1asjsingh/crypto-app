@@ -53,14 +53,14 @@ function Leaderboard() {
   return (
     <Container>
       <Row>
-        <h1>Leaderboard</h1>
+        <h1>Leaderboard ({getLocalCurr().substring(0, 3).toUpperCase()})</h1>
       </Row>
       <Row>
         <Table responsive className="coin-table" style={{ color: "white" }}>
           <thead>
             <tr className="text-center">
               <th>Player</th>
-              <th>P/L</th>
+              <th>P/L ({getLocalSymbol()})</th>
               <th>P/L (%)</th>
             </tr>
           </thead>
@@ -70,7 +70,7 @@ function Leaderboard() {
                 <td>{score.username}</td>
                 <td>
                   {getLocalSymbol()}
-                  {score.PL}
+                  {score.PL.toFixed(2)}
                 </td>
                 <td
                   style={{

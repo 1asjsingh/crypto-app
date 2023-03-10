@@ -93,15 +93,15 @@ function Game() {
 
     if (Math.abs(prevClose - currClose) <= constraint_range) {
       correct = "S";
-      setFeedback("Answer: Sideways");
+      setFeedback("(Answer: Sideways)");
     }
     if (currClose < prevClose - constraint_range) {
       correct = "L";
-      setFeedback("Answer: Lower");
+      setFeedback("(Answer: Lower)");
     }
     if (currClose > prevClose + constraint_range) {
       correct = "H";
-      setFeedback("Answer: Higher");
+      setFeedback("(Answer: Higher)");
     }
 
     //think of new way, if open inside previous but BIG MOVE up on close then?

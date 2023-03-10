@@ -1,10 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./SignIn.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { db } from "../components/firebase";
 import { getDoc, doc } from "firebase/firestore";
-import { UserContext } from "../contexts/UserContext";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -12,7 +11,6 @@ function SignIn() {
   const [pass, setPass] = useState();
   const [error, setError] = useState();
   const { signIn } = useAuthentication();
-  const { setCurrency } = useContext(UserContext);
 
   async function handleSignIn(e) {
     try {
@@ -20,7 +18,8 @@ function SignIn() {
       const user = await signIn(email, pass);
       const userData = await getDoc(doc(db, "crypto-accounts", user.user.uid));
       if (userData.exists()) {
-        setCurrency(userData.data().currency);
+        //setCurrency(userData.data().currency);
+        localStorage.setItem("currency", userData.data().currency);
       } else {
         setError("An error occured"); //CHANGE-----------------------
       }
@@ -29,12 +28,10 @@ function SignIn() {
     } catch (e) {
       if ("auth/user-not-found" === String(e.code)) {
         setError("Email not found. Please register");
-      }
-      else if ("auth/wrong-password" === String(e.code)) {
+      } else if ("auth/wrong-password" === String(e.code)) {
         setError("Incorrect password");
-      }
-      else {
-        setError(e.code)
+      } else {
+        setError(e.code);
       }
     }
   }

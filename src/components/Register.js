@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Register.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
@@ -11,7 +11,6 @@ import {
   where,
   query,
 } from "firebase/firestore";
-import { UserContext } from "../contexts/UserContext";
 import { Container, Row, Form, Button, Alert } from "react-bootstrap";
 
 function Register() {
@@ -22,7 +21,6 @@ function Register() {
   const [pass2, setPass2] = useState(null);
   const [error, setError] = useState(null);
   const { register } = useAuthentication();
-  const { setCurrency } = useContext(UserContext);
   const currencies = ["usd$", "cad$", "gbp£"];
   const [RegCurr, setRegCurr] = useState(currencies[0]);
 
@@ -59,7 +57,7 @@ function Register() {
           PL: 0,
         });
 
-        setCurrency(RegCurr);
+        localStorage.setItem("currency", RegCurr);
         setError();
         navigate(`/`);
       } else {
