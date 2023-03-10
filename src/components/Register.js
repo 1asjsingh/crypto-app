@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./Register.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { db } from "../components/firebase";
 import {
