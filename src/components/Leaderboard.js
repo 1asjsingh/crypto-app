@@ -59,14 +59,16 @@ function Leaderboard() {
         <Table responsive className="coin-table" style={{ color: "white" }}>
           <thead>
             <tr className="text-center">
+              <th>#</th>
               <th>Player</th>
               <th>P/L ({getLocalSymbol()})</th>
               <th>P/L (%)</th>
             </tr>
           </thead>
           <tbody>
-            {leaderboard.map((score) => (
+            {leaderboard.map((score, i) => (
               <tr className="text-center" key={score.username}>
+                <td>{i + 1}</td>
                 <td>{score.username}</td>
                 <td>
                   {getLocalSymbol()}
