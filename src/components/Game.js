@@ -206,7 +206,7 @@ function Game() {
         <h2>Leaderboard</h2>
       </Row>
       <Row className="round-box">
-        <Table responsive className="coin-table" style={{ color: "white" }}>
+        <Table striped responsive className="coin-table" style={{ color: "white" }}>
           <thead>
             <tr className="text-center">
               <th>#</th>

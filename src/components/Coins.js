@@ -145,7 +145,7 @@ function Coins() {
             </Col>
           </Row>
           <Row className="round-box">
-            <Table responsive className="coin-table" style={{ color: "white" }}>
+            <Table striped responsive className="coin-table" style={{ color: "white" }}>
               <thead>
                 <tr className="text-center">
                   <th>Icon</th>

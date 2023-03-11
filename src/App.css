@@ -24,3 +24,10 @@ input {
   padding: 25px !important  ;
   margin: 20px !important;
 }
+
+Table {
+  --bs-table-striped-bg: #424242 !important;
+  --bs-table-striped-color: white !important;
+}
+
+tr > td {border: none;}
