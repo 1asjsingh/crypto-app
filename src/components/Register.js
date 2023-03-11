@@ -83,7 +83,8 @@ function Register() {
         setError("Invalid email");
       } else {
         deleteAuth(registerUser)
-        setError(e.code);
+        setError("An error occured. Please try again");
+        console.error(e.code);
       }
     }
   }
