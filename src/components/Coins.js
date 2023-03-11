@@ -136,7 +136,7 @@ function Coins() {
       </Row>
 
       {tableView ? (
-        <Container className="round-box">
+        <Container>
           <Row>
             <Col className="d-flex justify-content-center">
               <Button variant="primary" onClick={switchView}>
@@ -144,7 +144,7 @@ function Coins() {
               </Button>
             </Col>
           </Row>
-          <Row>
+          <Row className="round-box">
             <Table responsive className="coin-table" style={{ color: "white" }}>
               <thead>
                 <tr className="text-center">
