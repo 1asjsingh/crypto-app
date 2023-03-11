@@ -65,8 +65,10 @@ function Game() {
 
         setLoading(false);
       } catch (e) {
-        if (e.code === "ERR_NETWORK") {
-          alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+        if (e.code) {
+          if (e.code === "ERR_NETWORK") {
+            alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+          }
         } else {
           console.error(e);
         }
