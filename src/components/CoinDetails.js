@@ -150,7 +150,7 @@ function CoinDetails() {
 
       window.location.reload(false);
     } catch (e) {
-      alert(e);
+      console.error(e);
     }
   };
 

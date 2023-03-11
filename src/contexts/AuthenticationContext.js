@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
+  deleteUser
 } from "firebase/auth"; //signout
 
 const AuthenticationContext = createContext();
@@ -29,6 +30,11 @@ export function AuthenticationProvider({ children }) {
     return signOut(auth);
   }
 
+  function deleteAuth() {
+    console.log(auth.currentUser)
+    return deleteUser(auth.currentUser);
+  }
+
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
       setAuthedUser(user);
@@ -40,7 +46,7 @@ export function AuthenticationProvider({ children }) {
 
   return (
     <AuthenticationContext.Provider
-      value={{ authedUser, register, signIn, authSignOut }}
+      value={{ authedUser, register, signIn, authSignOut, deleteAuth }}
     >
       {children}
     </AuthenticationContext.Provider>

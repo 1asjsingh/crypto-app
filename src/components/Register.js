@@ -3,12 +3,12 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { db } from "../components/firebase";
 import {
-  setDoc,
   doc,
   collection,
   getDocs,
   where,
   query,
+  writeBatch,
 } from "firebase/firestore";
 import { Container, Row, Form, Button, Alert } from "react-bootstrap";
 
@@ -19,9 +19,10 @@ function Register() {
   const [pass, setPass] = useState(null);
   const [pass2, setPass2] = useState(null);
   const [error, setError] = useState(null);
-  const { register, authedUser } = useAuthentication();
+  const { register, authedUser, deleteAuth } = useAuthentication();
   const currencies = ["usd$", "cad$", "gbp£"];
   const [RegCurr, setRegCurr] = useState(currencies[0]);
+  let registerUser = null
 
   async function handleRegister(e) {
     try {
@@ -45,20 +46,25 @@ function Register() {
 
         if (usernameList.empty) {
           const user = await register(email, pass);
+          registerUser = user.user.uid  
 
-          await setDoc(doc(db, "crypto-accounts", user.user.uid), {
+          const batch = writeBatch(db);
+
+          batch.set(doc(db, "crypto-accounts", user.user.uid), {
             balance: 100000,
             currency: RegCurr,
             username: username,
           });
 
-          await setDoc(doc(db, "crypto-leaderboard", user.user.uid), {
+          batch.set(doc(db, "crypto-leaderboard", user.user.uid), {
             username: username,
             usernameLC: username.toLowerCase(),
             currency: RegCurr,
             score: 0,
             PL: 0,
           });
+
+          await batch.commit();
 
           localStorage.setItem("currency", RegCurr);
           setError();
@@ -76,6 +82,7 @@ function Register() {
       } else if ("auth/invalid-email" === String(e.code)) {
         setError("Invalid email");
       } else {
+        deleteAuth(registerUser)
         setError(e.code);
       }
     }
