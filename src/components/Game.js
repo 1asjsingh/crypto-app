@@ -205,7 +205,7 @@ function Game() {
       <Row>
         <h2>Leaderboard</h2>
       </Row>
-      <Row>
+      <Row className="round-box">
         <Table responsive className="coin-table" style={{ color: "white" }}>
           <thead>
             <tr className="text-center">

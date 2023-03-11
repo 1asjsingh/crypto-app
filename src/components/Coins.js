@@ -136,7 +136,7 @@ function Coins() {
       </Row>
 
       {tableView ? (
-        <>
+        <Container className="round-box">
           <Row>
             <Col className="d-flex justify-content-center">
               <Button variant="primary" onClick={switchView}>
@@ -277,7 +277,7 @@ function Coins() {
               </tbody>
             </Table>
           </Row>
-        </>
+        </Container>
       ) : (
         <Row>
           <Row>

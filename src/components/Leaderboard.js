@@ -55,7 +55,7 @@ function Leaderboard() {
       <Row>
         <h1>Leaderboard ({getLocalCurr().substring(0, 3).toUpperCase()})</h1>
       </Row>
-      <Row>
+      <Row className="round-box">
         <Table responsive className="coin-table" style={{ color: "white" }}>
           <thead>
             <tr className="text-center">
