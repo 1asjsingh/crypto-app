@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "./axios";
+import predictionAxios from "./predictionAxios";
 import Loading from "./Loading";
 import { getDetails } from "./requests.js";
 import Chart from "./Chart.js";
@@ -27,11 +28,13 @@ function CoinDetails() {
   const { authedUser } = useAuthentication();
   const { coin } = useParams();
   const [details, setDetails] = useState([]);
+  const [predictedVals, setPredictedVals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState();
   const [cost, setCost] = useState(0);
   const [candleView, setCandleView] = useState(false);
   const navigate = useNavigate();
+  let predictedCoins = ["bitcoin", "ethereum", "dogecoin", "tether", "ripple"];
 
   const numeralise = (num) => {
     const converted = numeral(num).format("0.0a");
@@ -58,6 +61,14 @@ function CoinDetails() {
       try {
         const request = await axios.get(getDetails(coin));
         setDetails(request.data);
+
+        if (predictedCoins.includes(coin)) {
+          const predRes = await predictionAxios.get(
+            `/predict/${request.data.symbol.toUpperCase()}/${getLocalCurr().toUpperCase()}`
+          );
+          setPredictedVals(predRes.data);
+        }
+
         setLoading(false);
         return request;
       } catch (e) {
@@ -80,7 +91,6 @@ function CoinDetails() {
 
   useEffect(() => {
     if (quantity && details) {
-      console.log(1);
       setCost(quantity * details.market_data.current_price[getLocalCurr()]);
     } else {
       setCost(0);
@@ -363,10 +373,17 @@ function CoinDetails() {
             <div dangerouslySetInnerHTML={{ __html: details.description.en }} />
           </Row>
         )}
-        <Row className="coin-chart round-box">
-          <h3>Prediction</h3>
-          <Chart currency={getLocalCurr()} coin={coin} prediction={true} />
-        </Row>
+
+        {predictedCoins.includes(coin) && (
+          <Row className="coin-chart round-box">
+            <h3>Prediction</h3>
+            <Chart
+              currency={getLocalCurr()}
+              coin={coin}
+              prediction={predictedVals}
+            />
+          </Row>
+        )}
       </Container>
     </div>
   );

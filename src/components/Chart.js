@@ -22,40 +22,42 @@ ChartJS.register(zoomPlugin);
 
 function Chart({ currency, coin, prediction }) {
   const [chartData, setChartData] = useState([]);
+  const [predData, setPredData] = useState([]);
   let [range, setRange] = useState(!prediction ? 1 : 365);
   const [loading, setLoading] = useState(true);
-
-  const [predictionPrices, setPredictionPrices] = useState([]);
-  const [predictionTimes, setPredictionTimes] = useState([]);
-
-  if (prediction) {
-    //setRange(365);
-  }
 
   useEffect(() => {
     async function getData() {
       try {
         let res = await axios.get(getChart(coin, currency, range));
-        res = res.data;
+        res = res.data.prices;
 
         if (prediction) {
-          let pred = [];
+          let todayTime = parseInt(res[res.length - 1][0]);
 
-          const connection = res.prices.slice(-8)[0];
-          pred = res.prices.splice(-7, 7);
-          pred.unshift(connection);
+          let todayUnix = new Date(todayTime);
+          todayUnix = moment(todayUnix).format("L HH:mm");
 
-          let price_data = pred.map((data) => {
-            let unix = new Date(data[0]);
+          let predArr = prediction.map((price) => {
+            todayTime += 86400000; //CHANGE =============================
+            let unix = new Date(todayTime);
             unix = moment(unix).format("L HH:mm");
-            return { x: unix, y: data[1] };
+            return { x: unix, y: price };
           });
 
-          setPredictionPrices(price_data);
+          predArr.unshift({
+            x: todayUnix,
+            y: res[res.length - 1][1],
+          });
+
+          setPredData(predArr);
+
+          if (res.length > 150) {
+            res = res.splice(-100, 100);
+          }
         }
 
         setChartData(res);
-
         setLoading(false);
         return res;
       } catch (e) {
@@ -71,7 +73,7 @@ function Chart({ currency, coin, prediction }) {
 
   if (loading) return <Loading />;
 
-  const times = chartData.prices.map((data) => {
+  const times = chartData.map((data) => {
     let unix = new Date(data[0]);
     if (range === "1") {
       return moment(unix).format("LT");
@@ -80,7 +82,7 @@ function Chart({ currency, coin, prediction }) {
     }
   });
 
-  let prices = chartData.prices.map((data) => {
+  let prices = chartData.map((data) => {
     return data[1];
   });
 
@@ -153,7 +155,7 @@ function Chart({ currency, coin, prediction }) {
       },
       {
         fill: true,
-        data: predictionPrices,
+        data: predData,
         borderColor: "rgb(124,252,0)",
         backgroundColor: "rgb(124, 252, 0, 0.3)",
         pointRadius: 0,
