@@ -31,7 +31,7 @@ function Leaderboard() {
         }));
 
         pl.sort(function (x, y) {
-          return y.score - x.score;
+          return y.PL - x.PL;
         });
 
         let plFiltered = pl.filter((curr) => {
@@ -56,7 +56,12 @@ function Leaderboard() {
         <h1>Leaderboard ({getLocalCurr().substring(0, 3).toUpperCase()})</h1>
       </Row>
       <Row className="round-box">
-        <Table striped responsive className="coin-table" style={{ color: "white" }}>
+        <Table
+          striped
+          responsive
+          className="coin-table"
+          style={{ color: "white" }}
+        >
           <thead>
             <tr className="text-center">
               <th>#</th>
