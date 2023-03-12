@@ -43,7 +43,18 @@ function History() {
         setCoinData(coins.data);
         setLoading(false);
       } catch (e) {
-        console.error(e);
+        if (e.response) {
+          console.error(e);
+        }
+        if (e.request) {
+          if (e.code === "ERR_NETWORK") {
+            alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+          } else {
+            console.error(e);
+          }
+        } else {
+          console.error(e);
+        }
       }
     }
 

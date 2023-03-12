@@ -61,8 +61,15 @@ function Chart({ currency, coin, prediction }) {
         setLoading(false);
         return res;
       } catch (e) {
-        if (e.code === "ERR_NETWORK") {
-          alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+        if (e.response) {
+          console.error(e);
+        }
+        if (e.request) {
+          if (e.code === "ERR_NETWORK") {
+            alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+          } else {
+            console.error(e);
+          }
         } else {
           console.error(e);
         }

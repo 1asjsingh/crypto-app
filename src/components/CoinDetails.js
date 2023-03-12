@@ -57,35 +57,63 @@ function CoinDetails() {
   };
 
   useEffect(() => {
-    const getData = async () => {
+    async function getData() {
       try {
         const request = await axios.get(getDetails(coin));
         setDetails(request.data);
 
         if (predictedCoins.includes(coin)) {
-          const predRes = await predictionAxios.get(
-            `/predict/${request.data.symbol.toUpperCase()}/${getLocalCurr().toUpperCase()}`
-          );
-          setPredictedVals(predRes.data);
+          getPrediction(request.data.symbol.toUpperCase());
         }
 
         setLoading(false);
         return request;
       } catch (e) {
         if (e.response) {
-          if (parseInt(e.response.status) === 404) {
+          if (e.response.status === 404) {
             navigate("/notfound");
             return;
+          } else {
+            console.error(e);
           }
         }
-
-        if (e.code === "ERR_NETWORK") {
-          alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+        if (e.request) {
+          if (e.code === "ERR_NETWORK") {
+            alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+          } else {
+            console.error(e);
+          }
         } else {
           console.error(e);
         }
       }
-    };
+    }
+
+    async function getPrediction(symbol) {
+      try {
+        const predRes = await predictionAxios.get(
+          `/predict/${symbol}/${getLocalCurr().toUpperCase()}`
+        );
+        setPredictedVals(predRes.data);
+      } catch (e) {
+        if (e.response) {
+          if (e.response.status === 500) {
+            alert("Unsupported coin for prediction");
+          } else {
+            console.error(e);
+          }
+        }
+        if (e.request) {
+          if (e.code === "ERR_NETWORK") {
+            alert("Prediction server is offline");
+          } else {
+            console.error(e);
+          }
+        } else {
+          console.error(e);
+        }
+      }
+    }
     getData();
   }, [coin, navigate]); //navigate ----------------------------------------------------
 
@@ -374,9 +402,10 @@ function CoinDetails() {
           </Row>
         )}
 
-        {predictedCoins.includes(coin) && (
+        {predictedCoins.includes(coin) && predictedVals.length > 0 && (
           <Row className="coin-chart round-box">
             <h3>Prediction</h3>
+            <p>Disclaimer: This is a prediction and not financial advice</p>
             <Chart
               currency={getLocalCurr()}
               coin={coin}
