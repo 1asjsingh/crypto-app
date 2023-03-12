@@ -18,7 +18,9 @@ import numeral from "numeral";
 
 function Coins() {
   const [coins, setCoins] = useState([]);
-  const [tableView, setTableView] = useState(false);
+  const [tableView, setTableView] = useState(
+    localStorage.getItem("dashboardView") || "g"
+  );
   const [search, setSearch] = useState("");
   const [sortCol, setSortCol] = useState("");
   const [order, setOrder] = useState("");
@@ -60,10 +62,10 @@ function Coins() {
 
   const switchView = () => {
     setOrder("");
-    if (tableView) {
-      setTableView(false);
+    if (tableView === "t") {
+      setTableView("g");
     } else {
-      setTableView(true);
+      setTableView("t");
     }
   };
 
@@ -142,7 +144,7 @@ function Coins() {
         </Col>
       </Row>
 
-      {tableView ? (
+      {tableView === "t" ? (
         <Container>
           <Row>
             <Col className="d-flex justify-content-center">
@@ -152,7 +154,12 @@ function Coins() {
             </Col>
           </Row>
           <Row className="round-box">
-            <Table striped responsive className="coin-table" style={{ color: "white" }}>
+            <Table
+              striped
+              responsive
+              className="coin-table"
+              style={{ color: "white" }}
+            >
               <thead>
                 <tr className="text-center">
                   <th>Icon</th>

@@ -32,7 +32,9 @@ function CoinDetails() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState();
   const [cost, setCost] = useState(0);
-  const [candleView, setCandleView] = useState(false);
+  const [candleView, setCandleView] = useState(
+    localStorage.getItem("chartView") || "l"
+  );
   const navigate = useNavigate();
   let predictedCoins = ["bitcoin", "ethereum", "dogecoin", "tether", "ripple"];
 
@@ -49,10 +51,10 @@ function CoinDetails() {
   };
 
   const switchChartView = () => {
-    if (candleView) {
-      setCandleView(false);
+    if (candleView === "c") {
+      setCandleView("l");
     } else {
-      setCandleView(true);
+      setCandleView("c");
     }
   };
 
@@ -290,7 +292,7 @@ function CoinDetails() {
         </Row>
         <Row>
           <Col xl="9" lg="12" md="12" className="coin-chart round-box">
-            {candleView ? (
+            {candleView === "c" ? (
               <Candlestick currency={getLocalCurr()} coin={coin} />
             ) : (
               <Chart currency={getLocalCurr()} coin={coin} />
