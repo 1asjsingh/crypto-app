@@ -98,12 +98,6 @@ function NavigationBar() {
                 />
               </Col>
             </Row>
-            <Row>
-              <Button className="w-75" variant="danger">
-                Change Currency
-              </Button>
-              <p className="text-center">Note: This will reset any progress</p>
-            </Row>
           </Form>
         </Modal.Body>
         <Modal.Footer>
