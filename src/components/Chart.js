@@ -76,7 +76,7 @@ function Chart({ currency, coin, prediction }) {
       }
     }
     getData();
-  }, [coin, currency, range]);
+  }, [coin, currency, range, prediction]);
 
   if (loading) return <Loading />;
 

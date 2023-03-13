@@ -31,8 +31,8 @@ function Portfolio() {
   const [latestPrice, setLatestPrice] = useState([]);
   //const [test1, test12] = useState({btc: {quan: 1, price: 12.3}});
 
-  const [sellQuantity, setSellQuantity] = useState(null);
-  const [sellPrice, setSellPrice] = useState(null);
+  const [sellQuantity, setSellQuantity] = useState(0);
+  const [sellPrice, setSellPrice] = useState(0);
   const [sellIndex, setSellIndex] = useState(null);
 
   const getLocalCurr = () => {
@@ -81,8 +81,9 @@ function Portfolio() {
                 absVal -= indexQuantity;
                 transHistory[index]["coin"] = "SOLD";
               } else if (indexQuantity > 0 && absVal < indexQuantity) {
-                transHistory[index]["quantity"] =
-                  parseFloat(transHistory[index]["quantity"]) - absVal; //FLOATING POINT ERROR FIX
+                transHistory[index]["quantity"] = (
+                  parseFloat(transHistory[index]["quantity"]) - absVal
+                ).toFixed(2); //FLOATING POINT ERROR FIX
                 absVal -= indexQuantity;
               }
             }
@@ -174,16 +175,20 @@ function Portfolio() {
     setShow(true);
   };
 
-  useEffect(() => {
-    if (sellQuantity) {
+  //useEffect(() => {
+  function handleSellQuantity(e) {
+    const quant = Number(Number(e.target.value).toFixed(2));
+    setSellQuantity(quant);
+    if (quant > 0) {
       setSellPrice(
-        sellQuantity *
+        quant *
           latestPrice.find(({ id }) => id === coins1[sellIndex]).current_price
       ); //------------------------------------------------------
     } else {
       setSellPrice(0);
     }
-  }, [sellQuantity, latestPrice, coins1, sellIndex]);
+  }
+  //}, [sellQuantity, latestPrice, coins1, sellIndex]);
 
   const handleSell = async () => {
     const userData = (
@@ -263,8 +268,8 @@ function Portfolio() {
                   min="0"
                   id="quantity"
                   name="quantity"
-                  onChange={(event) => {
-                    setSellQuantity(event.target.value);
+                  onChange={(e) => {
+                    handleSellQuantity(e);
                   }}
                 />
               </Col>
@@ -273,8 +278,18 @@ function Portfolio() {
             <Row>
               <Col>Total ({getSymbol()})</Col>
               <Col>
-                <input className="form-control" value={sellPrice} disabled />
+                <input
+                  className="form-control"
+                  value={sellPrice.toFixed(2)}
+                  disabled
+                />
               </Col>
+            </Row>
+            <Row>
+              <p>
+                Order: SELL {sellQuantity} for {getSymbol()}
+                {sellPrice.toFixed(2)}
+              </p>
             </Row>
           </Container>
         </Modal.Body>

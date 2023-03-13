@@ -38,8 +38,6 @@ function NavigationBar() {
 
   const handleShow = () => setShow(true);
 
-  const deleteConfirmShow = () => setShow(true);
-
   function handleDashboardView(e) {
     setDashboardView(e.target.value);
     localStorage.setItem("dashboardView", e.target.value);

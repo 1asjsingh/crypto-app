@@ -119,13 +119,15 @@ function CoinDetails() {
     getData();
   }, [coin, navigate]); //navigate ----------------------------------------------------
 
-  useEffect(() => {
-    if (quantity && details) {
-      setCost(quantity * details.market_data.current_price[getLocalCurr()]);
+  function handleBuyQuantity(e) {
+    const quant = Number(Number(e.target.value).toFixed(2))
+    setQuantity(quant);
+    if (quant > 0) {
+      setCost(quant * details.market_data.current_price[getLocalCurr()]);
     } else {
       setCost(0);
     }
-  }, [quantity, details]);
+  }
 
   const [show, setShow] = useState(false);
   const handleClose = () => {
@@ -214,8 +216,8 @@ function CoinDetails() {
                   min="0"
                   id="quantity"
                   name="quantity"
-                  onChange={(event) => {
-                    setQuantity(parseFloat(event.target.value));
+                  onChange={(e) => {
+                    handleBuyQuantity(e);
                   }}
                 />
               </Col>
@@ -224,8 +226,14 @@ function CoinDetails() {
             <Row>
               <Col>Total ({getSymbol()})</Col>
               <Col>
-                <input className="form-control" value={cost} disabled />
+                <input className="form-control" value={cost.toFixed(2)} disabled />
               </Col>
+            </Row>
+            <Row>
+              <p>
+                Order: BUY {quantity} for {getSymbol()}
+                {cost.toFixed(2)}
+              </p>
             </Row>
           </Container>
         </Modal.Body>
