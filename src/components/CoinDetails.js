@@ -67,7 +67,7 @@ function CoinDetails() {
         const request = await axios.get(getDetails(coin));
         setDetails(request.data);
 
-        if (predictedCoins.includes(coin)) {
+        if (predictedCoins().includes(coin)) {
           getPrediction(request.data.symbol.toUpperCase());
         }
 
@@ -419,7 +419,7 @@ function CoinDetails() {
           </Row>
         )}
 
-        {predictedCoins.includes(coin) && predictedVals.length > 0 && (
+        {predictedCoins().includes(coin) && predictedVals.length > 0 && (
           <Row className="coin-chart round-box">
             <h3>Prediction</h3>
             <p>Disclaimer: This is a prediction and not financial advice</p>

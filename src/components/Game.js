@@ -26,7 +26,7 @@ function Game() {
   const initialIndex = Math.floor(Math.random() * coins.length);
   const [currentCoin, setCurrentCoin] = useState(coins[initialIndex]);
   const [currentDisplay, setCurrentDisplay] = useState(
-    displayNames[initialIndex]
+    displayNames()[initialIndex]
   );
   const [score, setScore] = useState(0);
   const { authedUser } = useAuthentication();
@@ -84,10 +84,10 @@ function Game() {
       }
     };
     if (answered === false) {
-      const i = Math.floor(Math.random() * coins.length);
-      setCurrentCoin(coins[i]);
-      setCurrentDisplay(displayNames[i]);
-      getCandleData(coins[i]);
+      const i = Math.floor(Math.random() * coins().length);
+      setCurrentCoin(coins()[i]);
+      setCurrentDisplay(displayNames()[i]);
+      getCandleData(coins()[i]);
     }
   }, [score, answered, coins, displayNames]);
 
