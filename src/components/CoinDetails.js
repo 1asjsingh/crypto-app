@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "./axios";
 import predictionAxios from "./predictionAxios";
@@ -36,7 +36,10 @@ function CoinDetails() {
     localStorage.getItem("chartView") || "l"
   );
   const navigate = useNavigate();
-  let predictedCoins = ["bitcoin", "ethereum", "dogecoin", "tether", "ripple"];
+
+  const predictedCoins = useCallback(() => {
+    return ["bitcoin", "ethereum", "dogecoin", "tether", "ripple"];
+  }, []);
 
   const numeralise = (num) => {
     const converted = numeral(num).format("0.0a");
@@ -117,10 +120,10 @@ function CoinDetails() {
       }
     }
     getData();
-  }, [coin, navigate]); //navigate ----------------------------------------------------
+  }, [coin, navigate, predictedCoins]); //navigate ----------------------------------------------------
 
   function handleBuyQuantity(e) {
-    const quant = Number(Number(e.target.value).toFixed(2))
+    const quant = Number(Number(e.target.value).toFixed(2));
     setQuantity(quant);
     if (quant > 0) {
       setCost(quant * details.market_data.current_price[getLocalCurr()]);
@@ -226,7 +229,11 @@ function CoinDetails() {
             <Row>
               <Col>Total ({getSymbol()})</Col>
               <Col>
-                <input className="form-control" value={cost.toFixed(2)} disabled />
+                <input
+                  className="form-control"
+                  value={cost.toFixed(2)}
+                  disabled
+                />
               </Col>
             </Row>
             <Row>

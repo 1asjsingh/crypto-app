@@ -7,7 +7,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Col, Container, Row, Button, Alert, Table } from "react-bootstrap";
 import axios from "./axios";
 import Candlestick from "./Candlestick";
@@ -17,8 +17,12 @@ import { getCandleChart } from "./requests.js";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 
 function Game() {
-  const coins = ["bitcoin", "ethereum", "binancecoin", "litecoin"];
-  const displayNames = ["Bitcoin", "Ethereum", "BNB", "Litecoin"]; //reduce api calls
+  const coins = useCallback(() => {
+    return ["bitcoin", "ethereum", "binancecoin", "litecoin"];
+  }, []);
+  const displayNames = useCallback(() => {
+    return ["Bitcoin", "Ethereum", "BNB", "Litecoin"];
+  }, []); //reduce api calls
   const initialIndex = Math.floor(Math.random() * coins.length);
   const [currentCoin, setCurrentCoin] = useState(coins[initialIndex]);
   const [currentDisplay, setCurrentDisplay] = useState(
@@ -85,7 +89,7 @@ function Game() {
       setCurrentDisplay(displayNames[i]);
       getCandleData(coins[i]);
     }
-  }, [score, answered]);
+  }, [score, answered, coins, displayNames]);
 
   const handleAnswer = (selected) => {
     setCandleData(answer);
@@ -211,7 +215,12 @@ function Game() {
         <h2>Leaderboard</h2>
       </Row>
       <Row className="round-box">
-        <Table striped responsive className="coin-table" style={{ color: "white" }}>
+        <Table
+          striped
+          responsive
+          className="coin-table"
+          style={{ color: "white" }}
+        >
           <thead>
             <tr className="text-center">
               <th>#</th>
