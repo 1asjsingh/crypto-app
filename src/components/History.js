@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { db } from "./firebase";
-import { getDocs, collection } from "firebase/firestore";
 import Loading from "./Loading";
 import { getCurrencies } from "./requests.js";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { Container, Row, Table } from "react-bootstrap";
-import axios from "axios";
+import axios from "./axios";
+import expressAxios from "./expressAxios";
 import { useNavigate } from "react-router-dom";
 
 function History() {
@@ -22,24 +21,14 @@ function History() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const transactions = await getDocs(
-          collection(db, "crypto-accounts", authedUser.uid, "transactions")
-        );
+        let transactions = await expressAxios.get(`getHistory/${authedUser.uid}`)
+        transactions = transactions.data
 
         const coins = await axios.get(
           getCurrencies(localStorage.getItem("currency").substring(0, 3))
         );
 
-        let transHistory = transactions.docs.map((data) => ({
-          coin: data.id,
-          ...data.data(),
-        }));
-
-        transHistory.sort(function (x, y) {
-          return new Date(y.time) - new Date(x.time);
-        });
-
-        setTransactions(transHistory);
+        setTransactions(transactions);
         setCoinData(coins.data);
         setLoading(false);
       } catch (e) {

@@ -1,7 +1,6 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { Container, Row, Table } from "react-bootstrap";
-import { db } from "./firebase";
+import expressAxios from "./expressAxios";
 import Loading from "./Loading";
 
 function Leaderboard() {
@@ -19,26 +18,10 @@ function Leaderboard() {
   useEffect(() => {
     async function getLeaderboard() {
       try {
-        const plRes = await getDocs(
-          query(
-            collection(db, "crypto-leaderboard"),
-            where("currency", "==", getLocalCurr())
-          )
-        );
+        let res = await expressAxios.get(`getLeaderboard/${getLocalCurr()}`);
+        res = res.data;
 
-        let pl = plRes.docs.map((data) => ({
-          ...data.data(),
-        }));
-
-        pl.sort(function (x, y) {
-          return y.PL - x.PL;
-        });
-
-        let plFiltered = pl.filter((curr) => {
-          return curr.PL !== 0;
-        });
-
-        setLeaderboard(plFiltered.slice(0, 10));
+        setLeaderboard(res);
 
         setLoading(false);
       } catch (e) {

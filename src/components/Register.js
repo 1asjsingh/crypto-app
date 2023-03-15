@@ -49,7 +49,7 @@ function Register() {
           registerUser = user.user.uid  
 
           const batch = writeBatch(db);
-
+                                                                                                                
           batch.set(doc(db, "crypto-accounts", user.user.uid), {
             balance: 100000,
             currency: RegCurr,

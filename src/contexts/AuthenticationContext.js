@@ -5,7 +5,7 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-  deleteUser
+  deleteUser,
 } from "firebase/auth"; //signout
 
 const AuthenticationContext = createContext();
@@ -16,7 +16,7 @@ export function useAuthentication() {
 
 export function AuthenticationProvider({ children }) {
   const [authedUser, setAuthedUser] = useState({});
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   function register(email, password) {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -31,18 +31,17 @@ export function AuthenticationProvider({ children }) {
   }
 
   function deleteAuth() {
-    console.log(auth.currentUser)
     return deleteUser(auth.currentUser);
   }
 
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
       setAuthedUser(user);
-      setLoading(false)
+      setLoading(false);
     });
   }, []);
 
-  if (loading) return
+  if (loading) return;
 
   return (
     <AuthenticationContext.Provider
