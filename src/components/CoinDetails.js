@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "./axios";
+import expressAxios from "./expressAxios";
 import predictionAxios from "./predictionAxios";
 import Loading from "./Loading";
 import { getDetails } from "./requests.js";
@@ -9,15 +10,6 @@ import "./CoinDetail.css";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useAuthentication } from "../contexts/AuthenticationContext";
-import { db } from "../components/firebase";
-import {
-  getDocs,
-  getDoc,
-  setDoc,
-  collection,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
 import { Col, Container, Row } from "react-bootstrap";
 import Candlestick from "./Candlestick";
 import { TbChartCandle } from "react-icons/tb";
@@ -136,14 +128,14 @@ function CoinDetails() {
   const handleClose = () => {
     setShow(false);
     setQuantity(0);
+    setCost(0);
   };
   const handleShow = () => setShow(true);
 
   const handleBuy = async () => {
     try {
-      const userData = (
-        await getDoc(doc(db, "crypto-accounts", authedUser.uid))
-      ).data();
+      let userData = await expressAxios.get(`getUserData/${authedUser.uid}`)
+      userData = userData.data;
 
       if (cost > userData.balance) {
         return alert("Not Enough Funds");
@@ -152,46 +144,18 @@ function CoinDetails() {
         return alert("Please choose a total cost larger than 0.01");
       }
 
-      const transactions = await getDocs(
-        collection(db, "crypto-accounts", authedUser.uid, "transactions")
-      );
-      if (transactions.empty) {
-        await setDoc(
-          doc(db, "crypto-accounts", authedUser.uid, "transactions", "1"),
-          {
-            coin: coin,
-            quantity: parseFloat(quantity),
-            price: details.market_data.current_price[getLocalCurr()],
-            time: Date(), //-------------
-          }
-        );
-      } else {
-        const transactionId =
-          1 +
-          transactions.docs.map((data) => ({
-            coin: data.id,
-            ...data.data(),
-          })).length;
+      try {
+        const reqBody = {
+          id: authedUser.uid,
+          coin: coin,
+          quantity: parseFloat(quantity),
+          current_price: details.market_data.current_price[getLocalCurr()],
+          costPrice: cost,
+        };
 
-        await setDoc(
-          doc(
-            db,
-            "crypto-accounts",
-            authedUser.uid,
-            "transactions",
-            transactionId.toString()
-          ),
-          {
-            coin: coin,
-            quantity: parseFloat(quantity),
-            price: details.market_data.current_price[getLocalCurr()],
-            time: Date(), //-------------
-          }
-        );
-      }
-      await updateDoc(doc(db, "crypto-accounts", authedUser.uid), {
-        balance: userData.balance - cost,
-      });
+        let buy = await expressAxios.post(`buy`, reqBody);
+        console.log(buy);
+      } catch (e) {}
 
       window.location.reload(false);
     } catch (e) {

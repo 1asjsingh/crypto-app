@@ -38,7 +38,6 @@ function Portfolio() {
     async function fetchData() {
       try {
         const res = await expressAxios.get(`getUserData/${authedUser.uid}`);
-        console.log(res.data)
         setUserData(res.data);
 
         let res2 = await axios.get(getCurrencies(getLocalCurr()));
