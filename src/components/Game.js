@@ -1,17 +1,8 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
 import { Col, Container, Row, Button, Alert, Table } from "react-bootstrap";
 import axios from "./axios";
 import Candlestick from "./Candlestick";
-import { db } from "./firebase";
+import expressAxios from "./expressAxios";
 import Loading from "./Loading";
 import { getCandleChart } from "./requests.js";
 import { useAuthentication } from "../contexts/AuthenticationContext";
@@ -53,17 +44,8 @@ function Game() {
         setAnswer(randomWindow);
         setCandleData(randomWindow.slice(0, -7));
 
-        const scoresRes = await getDocs(
-          query(collection(db, "crypto-leaderboard"), where("score", ">", 0))
-        );
-
-        let scores = scoresRes.docs.map((data) => ({
-          ...data.data(),
-        }));
-
-        scores.sort(function (x, y) {
-          return y.score - x.score;
-        });
+        let scores = await expressAxios.get(`getGameLeaderboard`);
+        scores = scores.data;
 
         setHighScores(scores.slice(0, 10));
 
@@ -140,14 +122,8 @@ function Game() {
 
   async function handleHighScore(currScore) {
     try {
-      let res = await getDoc(doc(db, "crypto-leaderboard", authedUser.uid));
-      res = res.data();
-
-      if (parseInt(res.score) < currScore) {
-        await updateDoc(doc(db, "crypto-leaderboard", authedUser.uid), {
-          score: currScore,
-        });
-      }
+      await expressAxios.get(`updateScore/${authedUser.uid}/${currScore}`);
+      console.log("test")
     } catch (e) {
       console.log(e);
     }
