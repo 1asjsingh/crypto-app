@@ -1,11 +1,14 @@
 const express = require("express");
-require("dotenv").config()
+require("dotenv").config();
 const app = express();
 const cors = require("cors");
+const bodyParser = require('body-parser')
 const admin = require("firebase-admin");
 const port = 4000;
 
 app.use(cors());
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json())
 
 const axios = require("axios");
 
@@ -122,7 +125,6 @@ async function getPortfolio(id, res2) {
 
     transHistory.forEach((doc) => {
       const currentPrice = res2.find(({ id }) => id === doc.coin).current_price;
-      console.log(currentPrice);
 
       if (coins.includes(doc.coin)) {
         const i = coins.indexOf(doc.coin);
@@ -187,7 +189,6 @@ app.get("/getPortfolio/:currency/:id", async (req, res) => {
     response = response.data;
 
     const data = await getPortfolio(id, response);
-    console.log(data);
     res.send(data);
   } catch (e) {}
 });
@@ -241,6 +242,102 @@ app.get("/getLeaderboard/:currency", async (req, res) => {
     res.send(plFiltered);
   } catch (e) {}
 });
+
+app.get("/updateScore/:id/:newScore", async (req, res) => {
+  try {
+    const id = req.params["id"];
+    const newScore = parseInt(req.params["newScore"]);
+
+    const cryptoLeaderboard = db.collection("crypto-leaderboard").doc(id);
+
+    let currScore = await cryptoLeaderboard.get();
+    currScore = currScore.data().score;
+
+    if (parseInt(currScore) < newScore) {
+      await cryptoLeaderboard.update({ score: newScore });
+    }
+
+    res.send();
+  } catch (e) {}
+});
+
+app.get("/getGameLeaderboard", async (req, res) => {
+  try {
+    const cryptoLeaderboard = db.collection("crypto-leaderboard");
+    const scoresRes = await cryptoLeaderboard.where("score", ">", 0).get();
+
+    let scores = scoresRes.docs.map((data) => ({
+      ...data.data(),
+    }));
+
+    scores.sort(function (x, y) {
+      return y.score - x.score;
+    });
+
+    scores = scores.slice(0, 10);
+
+    res.send(scores);
+  } catch (e) {}
+});
+
+app.post("/sell", async (req, res) => {
+  try {
+    const {id, coin, quantity, current_price, sellPrice} = req.body
+
+    const cryptoAccount = db.collection("crypto-accounts").doc(id);
+
+    let userDetails = await cryptoAccount.get();
+    userDetails = userDetails.data();
+
+    const transactions = await cryptoAccount.collection("transactions").get();
+
+    const transHistory = transactions.docs.map((data) => ({
+      coin: data.id,
+      ...data.data(),
+    }));
+
+    const transactionId = 1 + transHistory.length;
+
+    const batch = db.batch();
+
+    const sale = cryptoAccount.collection("transactions").doc(transactionId.toString())
+
+    batch.set(sale, {
+      coin: coin,
+      quantity: -parseFloat(quantity),
+      price: current_price,
+      time: Date(),
+    });
+
+    const balanceUpdate = cryptoAccount
+    batch.update(balanceUpdate, {balance: (userDetails.balance + sellPrice)});
+
+    
+    await batch.commit();
+
+    res.sendStatus(200)
+  } catch (e) {}
+});
+
+app.get("/getUserData/:id", async (req, res) => {
+  try {
+    const id = req.params["id"];
+
+    const cryptoAccount = db.collection("crypto-accounts").doc(id);
+
+    let userDetails = await cryptoAccount.get();
+    userDetails = userDetails.data();
+
+    res.send(userDetails)
+
+  } catch (e) {}
+});
+
+/*app.get("/getUserData/:id", async (req, res) => {
+  try {
+    const cryptoAccounts = db.collection("crypto-accounts");
+  } catch (e) {}
+});*/
 
 app.listen(port, () => {
   console.log(`Express backend listening on port ${port}`);

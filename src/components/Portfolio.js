@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Portfolio.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
-import { db } from "./firebase";
-import {
-  getDoc,
-  getDocs,
-  collection,
-  doc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
 import Loading from "./Loading";
 import axios from "./axios";
 import expressAxios from "./expressAxios";
@@ -46,13 +37,16 @@ function Portfolio() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await getDoc(doc(db, "crypto-accounts", authedUser.uid));
-        setUserData(res.data());
+        const res = await expressAxios.get(`getUserData/${authedUser.uid}`);
+        console.log(res.data)
+        setUserData(res.data);
 
         let res2 = await axios.get(getCurrencies(getLocalCurr()));
         res2 = res2.data;
 
-        let res3 = await expressAxios.get(`getPortfolio/${getLocalCurr()}/${authedUser.uid}`)
+        let res3 = await expressAxios.get(
+          `getPortfolio/${getLocalCurr()}/${authedUser.uid}`
+        );
         res3 = res3.data;
 
         setCoins(res3.coins);
@@ -64,7 +58,7 @@ function Portfolio() {
 
         setLoading(false);
       } catch (e) {
-        if (e.response) { 
+        if (e.response) {
           console.error(e);
         }
         if (e.request) {
@@ -108,10 +102,6 @@ function Portfolio() {
   //}, [sellQuantity, latestPrice, coins, sellIndex]);
 
   const handleSell = async () => {
-    const userData = (
-      await getDoc(doc(db, "crypto-accounts", authedUser.uid))
-    ).data();
-
     if (sellPrice === 0 || sellPrice < 0) {
       return alert("Please choose a quantity larger than 0");
     }
@@ -122,43 +112,23 @@ function Portfolio() {
       return alert("Please choose a quantity larger than 0.");
     }
 
-    await getDocs(
-      collection(db, "crypto-accounts", authedUser.uid, "transactions")
-    )
-      .then(async (transactions) => {
-        const transactionId =
-          1 +
-          transactions.docs.map((data) => ({
-            coin: data.id,
-            ...data.data(),
-          })).length;
+    try {
+      const current_price = latestPrice.find(
+        ({ id }) => id === coins[sellIndex]
+      ).current_price;
 
-        await setDoc(
-          doc(
-            db,
-            "crypto-accounts",
-            authedUser.uid,
-            "transactions",
-            transactionId.toString()
-          ),
-          {
-            coin: coins[sellIndex],
-            quantity: -parseFloat(sellQuantity),
-            price: latestPrice.find(({ id }) => id === coins[sellIndex])
-              .current_price,
-            time: Date(), //-------------
-          }
-        );
-      })
-      .then(async () => {
-        await updateDoc(doc(db, "crypto-accounts", authedUser.uid), {
-          balance: userData.balance + sellPrice,
-        });
-        return;
-      })
-      .catch((e) => {
-        alert(e);
-      });
+      const reqBody = {
+        id: authedUser.uid,
+        coin: coins[sellIndex],
+        quantity: sellQuantity,
+        current_price: current_price,
+        sellPrice: sellPrice,
+      };
+
+      let sell = await expressAxios.post(`sell`, reqBody);
+      console.log(sell);
+    } catch (e) {}
+
     window.location.reload(false);
   };
 
@@ -296,18 +266,12 @@ function Portfolio() {
                       onClick={() => navigate(`/${coins[i]}`)}
                       style={{
                         color:
-                          100 *
-                            (openPL[i] / totalPrice[i]) <
-                          0
+                          100 * (openPL[i] / totalPrice[i]) < 0
                             ? "red"
                             : "green",
                       }}
                     >
-                      {(
-                        100 *
-                        (openPL[i] / totalPrice[i])
-                      ).toFixed(2)}
-                      %
+                      {(100 * (openPL[i] / totalPrice[i])).toFixed(2)}%
                     </td>
                     <td>
                       <Button variant="primary" onClick={() => handleShow(i)}>
