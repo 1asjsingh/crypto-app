@@ -32,6 +32,11 @@ function Register() {
       } else {
         e.preventDefault();
 
+        if (username.length > 30) {
+          setError("Username must be 30 characters or less");
+          return;
+        }
+
         if (pass !== pass2) {
           setError("Passwords do not match");
           return;
