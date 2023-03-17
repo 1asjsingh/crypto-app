@@ -1,0 +1,9 @@
+const express = require("express");
+const router = express.Router();
+const leaderboardController = require("../controllers/leaderboardController");
+
+router.get("/getLeaderboard/:currency", leaderboardController.getLeaderboard);
+router.get("/updateScore/:id/:newScore", leaderboardController.updateScore);
+router.get("/getGameLeaderboard", leaderboardController.getGameLeaderboard);
+
+module.exports = router;

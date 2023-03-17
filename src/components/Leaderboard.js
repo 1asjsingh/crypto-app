@@ -18,7 +18,9 @@ function Leaderboard() {
   useEffect(() => {
     async function getLeaderboard() {
       try {
-        let res = await expressAxios.get(`getLeaderboard/${getLocalCurr()}`);
+        let res = await expressAxios.get(
+          `leaderboard/getLeaderboard/${getLocalCurr()}`
+        );
         res = res.data;
 
         setLeaderboard(res);

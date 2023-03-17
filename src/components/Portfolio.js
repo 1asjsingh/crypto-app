@@ -37,16 +37,18 @@ function Portfolio() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await expressAxios.get(`getUserData/${authedUser.uid}`);
+        const res = await expressAxios.get(
+          `user/getUserData/${authedUser.uid}`
+        );
         setUserData(res.data);
+
+        let res3 = await expressAxios.get(
+          `portfolio/getPortfolio/${getLocalCurr()}/${authedUser.uid}`
+        );
+        res3 = res3.data;
 
         let res2 = await axios.get(getCurrencies(getLocalCurr()));
         res2 = res2.data;
-
-        let res3 = await expressAxios.get(
-          `getPortfolio/${getLocalCurr()}/${authedUser.uid}`
-        );
-        res3 = res3.data;
 
         setCoins(res3.coins);
         setProfitBalance(res3.balanceIncProfits);
@@ -58,7 +60,11 @@ function Portfolio() {
         setLoading(false);
       } catch (e) {
         if (e.response) {
-          console.error(e);
+          if (e.response.status === 429) {
+            alert("CoinGecko request limit reached. Please wait 1-2 minutes.");
+          } else {
+            console.error(e);
+          }
         }
         if (e.request) {
           if (e.code === "ERR_NETWORK") {
@@ -79,6 +85,7 @@ function Portfolio() {
   const handleClose = () => {
     setShow(false);
     setSellQuantity(0);
+    setSellPrice(0);
   };
   const handleShow = (i) => {
     setSellIndex(i);
@@ -124,7 +131,7 @@ function Portfolio() {
         sellPrice: sellPrice,
       };
 
-      let sell = await expressAxios.post(`sell`, reqBody);
+      let sell = await expressAxios.post(`transaction/sell`, reqBody);
       console.log(sell);
     } catch (e) {}
 

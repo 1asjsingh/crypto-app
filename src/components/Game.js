@@ -44,7 +44,7 @@ function Game() {
         setAnswer(randomWindow);
         setCandleData(randomWindow.slice(0, -7));
 
-        let scores = await expressAxios.get(`getGameLeaderboard`);
+        let scores = await expressAxios.get(`leaderboard/getGameLeaderboard`);
         scores = scores.data;
 
         setHighScores(scores.slice(0, 10));
@@ -122,8 +122,9 @@ function Game() {
 
   async function handleHighScore(currScore) {
     try {
-      await expressAxios.get(`updateScore/${authedUser.uid}/${currScore}`);
-      console.log("test")
+      await expressAxios.get(
+        `leaderboard/updateScore/${authedUser.uid}/${currScore}`
+      );
     } catch (e) {
       console.log(e);
     }

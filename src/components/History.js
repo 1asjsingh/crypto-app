@@ -21,7 +21,7 @@ function History() {
   useEffect(() => {
     async function fetchData() {
       try {
-        let transactions = await expressAxios.get(`getHistory/${authedUser.uid}`)
+        let transactions = await expressAxios.get(`portfolio/getHistory/${authedUser.uid}`)
         transactions = transactions.data
 
         const coins = await axios.get(

@@ -134,7 +134,7 @@ function CoinDetails() {
 
   const handleBuy = async () => {
     try {
-      let userData = await expressAxios.get(`getUserData/${authedUser.uid}`)
+      let userData = await expressAxios.get(`getUserData/${authedUser.uid}`);
       userData = userData.data;
 
       if (cost > userData.balance) {
@@ -153,7 +153,7 @@ function CoinDetails() {
           costPrice: cost,
         };
 
-        let buy = await expressAxios.post(`buy`, reqBody);
+        let buy = await expressAxios.post(`transaction/buy`, reqBody);
         console.log(buy);
       } catch (e) {}
 
