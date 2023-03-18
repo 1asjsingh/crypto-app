@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "./axios";
+import expressAxios from "./expressAxios";
 import "./Coins.css";
-import { getCurrencies } from "./requests.js";
 import Loading from "./Loading";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
@@ -30,6 +29,10 @@ function Coins() {
     return localStorage.getItem("currency").substring(3, 4);
   };
 
+  const getCurr = () => {
+    return localStorage.getItem("currency").substring(0, 3);
+  };
+
   const numeralise = (num) => {
     const converted = numeral(num).format("0.0a");
     return converted.slice(0, -1) + converted.slice(-1).toUpperCase();
@@ -38,9 +41,7 @@ function Coins() {
   useEffect(() => {
     async function getData() {
       try {
-        const res = await axios.get(
-          getCurrencies(localStorage.getItem("currency").substring(0, 3))
-        );
+        const res = await expressAxios.get(`api/getCurrencies/${getCurr()}`);
         setCoins(res.data);
       } catch (e) {
         if (e.response) {

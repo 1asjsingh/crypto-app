@@ -1,4 +1,4 @@
-const db = require("../firestore");
+const db = require("../../firestore");
 
 async function portfolioCalc(id, res2) {
   try {
@@ -101,8 +101,8 @@ async function portfolioCalc(id, res2) {
       balanceIncProfits: balanceIncProfits,
     };
   } catch (e) {
-    console.log("Error in portfolioCalc")
-    console.log(e.message)
+    console.log("Error in portfolioCalc");
+    console.log(e.message);
   }
 }
 

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Loading from "./Loading";
-import { getCurrencies } from "./requests.js";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { Container, Row, Table } from "react-bootstrap";
-import axios from "./axios";
 import expressAxios from "./expressAxios";
 import { useNavigate } from "react-router-dom";
 
@@ -18,15 +16,19 @@ function History() {
     return localStorage.getItem("currency").substring(3, 4);
   };
 
+  const getCurr = () => {
+    return localStorage.getItem("currency").substring(0, 3);
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
-        let transactions = await expressAxios.get(`portfolio/getHistory/${authedUser.uid}`)
-        transactions = transactions.data
-
-        const coins = await axios.get(
-          getCurrencies(localStorage.getItem("currency").substring(0, 3))
+        let transactions = await expressAxios.get(
+          `portfolio/getHistory/${authedUser.uid}`
         );
+        transactions = transactions.data;
+
+        const coins = await expressAxios.get(`api/getCurrencies/${getCurr()}`);
 
         setTransactions(transactions);
         setCoinData(coins.data);
@@ -59,7 +61,12 @@ function History() {
       </Container>
 
       <Row className="round-box">
-        <Table striped responsive className="coin-table" style={{ color: "white" }}>
+        <Table
+          striped
+          responsive
+          className="coin-table"
+          style={{ color: "white" }}
+        >
           <thead>
             <tr className="text-center">
               <th>Icon</th>

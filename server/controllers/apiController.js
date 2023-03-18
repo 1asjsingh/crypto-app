@@ -108,6 +108,12 @@ const supportedCoins = [
   "convex-finance",
 ];
 
+/**
+ * Function that returns list of coin details while
+ * caching the response to reduce API requests.
+ * @param    {String} currency vs_currency of the user
+ * @return   {object}          API Res of coin details
+ */
 const getCurrencies = async (req, res) => {
   try {
     const currency = req.params["currency"];

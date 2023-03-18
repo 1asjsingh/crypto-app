@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Portfolio.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import Loading from "./Loading";
-import axios from "./axios";
 import expressAxios from "./expressAxios";
-import { getCurrencies } from "./requests.js";
 import { Table, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
@@ -47,7 +45,9 @@ function Portfolio() {
         );
         res3 = res3.data;
 
-        let res2 = await axios.get(getCurrencies(getLocalCurr()));
+        let res2 = await expressAxios.get(
+          `api/getCurrencies/${getLocalCurr()}`
+        );
         res2 = res2.data;
 
         setCoins(res3.coins);

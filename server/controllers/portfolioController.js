@@ -1,6 +1,6 @@
 const axios = require("axios");
 const db = require("../firestore");
-const portfolioCalc = require("./portfolioCalc");
+const portfolioCalc = require("./helpers/portfolioCalc");
 
 const BASE_URL = `https://api.coingecko.com/api/v3/`;
 
@@ -15,13 +15,13 @@ const getPortfolio = async (req, res) => {
     );
 
     response = response.data;
-      
+
     const data = await portfolioCalc(id, response);
 
     res.send(data);
   } catch (e) {
     console.log("Error in /getPortfolio");
-    console.log(e.message)
+    console.log(e.message);
     if (e.response) {
       res
         .status(e.response.status || 500)

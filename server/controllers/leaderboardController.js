@@ -1,6 +1,6 @@
 const axios = require("axios");
 const db = require("../firestore");
-const portfolioCalc = require("./portfolioCalc");
+const portfolioCalc = require("./helpers/portfolioCalc");
 
 const BASE_URL = `https://api.coingecko.com/api/v3/`;
 
