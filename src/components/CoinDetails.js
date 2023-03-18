@@ -134,8 +134,12 @@ function CoinDetails() {
 
   const handleBuy = async () => {
     try {
-      let userData = await expressAxios.get(`getUserData/${authedUser.uid}`);
+      let userData = await expressAxios.get(
+        `user/getUserData/${authedUser.uid}`
+      );
+      console.log(1);
       userData = userData.data;
+      console.log(userData);
 
       if (cost > userData.balance) {
         return alert("Not Enough Funds");
