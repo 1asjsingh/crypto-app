@@ -24,11 +24,11 @@ function History() {
     async function fetchData() {
       try {
         let transactions = await expressAxios.get(
-          `portfolio/getHistory/${authedUser.uid}`
+          `portfolio/transactionHistory/${authedUser.uid}`
         );
         transactions = transactions.data;
 
-        const coins = await expressAxios.get(`api/getCurrencies/${getCurr()}`);
+        const coins = await expressAxios.get(`coingecko/currentprices/${getCurr()}`);
 
         setTransactions(transactions);
         setCoinData(coins.data);

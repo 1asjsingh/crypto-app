@@ -35,18 +35,16 @@ function Portfolio() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await expressAxios.get(
-          `user/getUserData/${authedUser.uid}`
-        );
+        const res = await expressAxios.get(`user/details/${authedUser.uid}`);
         setUserData(res.data);
 
         let res3 = await expressAxios.get(
-          `portfolio/getPortfolio/${getLocalCurr()}/${authedUser.uid}`
+          `portfolio/fetch/${authedUser.uid}/${getLocalCurr()}`
         );
         res3 = res3.data;
 
         let res2 = await expressAxios.get(
-          `api/getCurrencies/${getLocalCurr()}`
+          `coingecko/currentprices/${getLocalCurr()}`
         );
         res2 = res2.data;
 
@@ -124,11 +122,12 @@ function Portfolio() {
       ).current_price;
 
       const reqBody = {
-        id: authedUser.uid,
+        userId: authedUser.uid,
         coin: coins[sellIndex],
         quantity: sellQuantity,
-        current_price: current_price,
+        currentPrice: current_price,
         sellPrice: sellPrice,
+        date: Date(),
       };
 
       let sell = await expressAxios.post(`transaction/sell`, reqBody);

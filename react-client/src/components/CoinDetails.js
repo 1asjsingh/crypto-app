@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "./axios";
+import axios from "../axios/coingecko";
 import expressAxios from "./expressAxios";
 import predictionAxios from "./predictionAxios";
 import Loading from "./Loading";
@@ -134,12 +134,9 @@ function CoinDetails() {
 
   const handleBuy = async () => {
     try {
-      let userData = await expressAxios.get(
-        `user/getUserData/${authedUser.uid}`
-      );
+      let userData = await expressAxios.get(`user/details/${authedUser.uid}`);
       console.log(1);
       userData = userData.data;
-      console.log(userData);
 
       if (cost > userData.balance) {
         return alert("Not Enough Funds");
@@ -150,11 +147,12 @@ function CoinDetails() {
 
       try {
         const reqBody = {
-          id: authedUser.uid,
+          userId: authedUser.uid,
           coin: coin,
           quantity: parseFloat(quantity),
-          current_price: details.market_data.current_price[getLocalCurr()],
+          currentPrice: details.market_data.current_price[getLocalCurr()],
           costPrice: cost,
+          date: Date(),
         };
 
         let buy = await expressAxios.post(`transaction/buy`, reqBody);

@@ -19,9 +19,11 @@ function Leaderboard() {
     async function getLeaderboard() {
       try {
         let res = await expressAxios.get(
-          `leaderboard/getLeaderboard/${getLocalCurr()}`
+          `leaderboard/portfolio/${getLocalCurr()}`
         );
         res = res.data;
+
+        console.log(res);
 
         setLeaderboard(res);
 

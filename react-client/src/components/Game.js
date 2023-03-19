@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Col, Container, Row, Button, Alert, Table } from "react-bootstrap";
-import axios from "./axios";
+import axios from "../axios/coingecko";
 import Candlestick from "./Candlestick";
 import expressAxios from "./expressAxios";
 import Loading from "./Loading";
@@ -44,7 +44,7 @@ function Game() {
         setAnswer(randomWindow);
         setCandleData(randomWindow.slice(0, -7));
 
-        let scores = await expressAxios.get(`leaderboard/getGameLeaderboard`);
+        let scores = await expressAxios.get(`leaderboard/game`);
         scores = scores.data;
 
         setHighScores(scores.slice(0, 10));
@@ -123,7 +123,7 @@ function Game() {
   async function handleHighScore(currScore) {
     try {
       await expressAxios.get(
-        `leaderboard/updateScore/${authedUser.uid}/${currScore}`
+        `leaderboard/updatescore/${authedUser.uid}/${currScore}`
       );
     } catch (e) {
       console.log(e);

@@ -41,7 +41,7 @@ function Coins() {
   useEffect(() => {
     async function getData() {
       try {
-        const res = await expressAxios.get(`api/getCurrencies/${getCurr()}`);
+        const res = await expressAxios.get(`coingecko/currentprices/${getCurr()}`);
         setCoins(res.data);
       } catch (e) {
         if (e.response) {
