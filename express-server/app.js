@@ -1,19 +1,19 @@
+// Load `.env` variables into `process.env`
+require("dotenv").config();
+
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
 // const cookieParser = require('cookie-parser');
 const morgan = require("morgan");
-// const cors = require('cors');
+const cors = require("cors");
+const { executeLeaderboardUpdate } = require("./services/leaderboard.service"); // FIXME: Change import when refactored as service
 
-// Load `.env` variables into `process.env`
-// FIXME: const node_env = process.env.NODE_ENV ? "." + process.env.NODE_ENV : "";
-require("dotenv").config(); // FIXME: Use - .config(`.env${node_env}`) - ?
-
-const transactionRoutes = require("./routes/transactionRoutes");
-const portfolioRoutes = require("./routes/portfolioRoutes");
-const leaderboardRoutes = require("./routes/leaderboardRoutes");
-const userRoutes = require("./routes/userRoutes");
-const apiRoutes = require("./routes/apiRoutes");
+const transactionRoutes = require("./routes/transaction.routes");
+const portfolioRoutes = require("./routes/portfolio.routes");
+const leaderboardRoutes = require("./routes/leaderboard.routes");
+const userRoutes = require("./routes/user.routes");
+const coingeckoRoutes = require("./routes/coingecko.routes");
 
 const app = express();
 
@@ -27,7 +27,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
-// app.use(cors());
+app.use(cors());
 
 // Sanity check
 app.all("/hello", (req, res) => {
@@ -39,7 +39,7 @@ app.use("/transaction", transactionRoutes);
 app.use("/portfolio", portfolioRoutes);
 app.use("/leaderboard", leaderboardRoutes);
 app.use("/user", userRoutes);
-app.use("/api", apiRoutes);
+app.use("/coingecko", coingeckoRoutes);
 
 // Catch requests that haven't been handled by the route handlers and forward
 // create a 404 error, and forward to error handler
@@ -57,5 +57,10 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error", { title: "Error" });
 });
+
+// Registering
+// FIXME: Refactor executeLeaderboardUpdate into services/leaderboard.service.js and then fix this import
+setInterval(executeLeaderboardUpdate, 3 * 60 * 1000);
+// setInterval(executeLeaderboardUpdate, 3 * 1000);
 
 module.exports = app;
