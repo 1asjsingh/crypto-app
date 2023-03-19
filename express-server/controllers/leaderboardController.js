@@ -47,7 +47,8 @@ function executeLeaderboardUpdate() {
   });
 }
 
-setInterval(executeLeaderboardUpdate, 180000);
+// FIXME: Move somewhere explicit/better
+// setInterval(executeLeaderboardUpdate, 180000);
 
 const getLeaderboard = async (req, res) => {
   try {
