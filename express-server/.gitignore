@@ -27,15 +27,7 @@ node_modules/
 *.tgz
 
 # dotenv environment variable files
-.env
-.env.development
-.env.development.local
-.env.production
-.env.production.local
-.env.test
-.env.test.local
-.env.local
+
 
 # Miscellaneous
 .DS_Store
-etc/
