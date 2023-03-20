@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import expressAxios from "./expressAxios";
+import expressAxios from "../axios/express";
 import "./Coins.css";
 import Loading from "./Loading";
 import Button from "react-bootstrap/Button";
@@ -41,7 +41,9 @@ function Coins() {
   useEffect(() => {
     async function getData() {
       try {
-        const res = await expressAxios.get(`coingecko/currentprices/${getCurr()}`);
+        const res = await expressAxios.get(
+          `coingecko/currentprices/${getCurr()}`
+        );
         setCoins(res.data);
       } catch (e) {
         if (e.response) {

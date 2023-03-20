@@ -22,7 +22,7 @@ function Register() {
   const { register, authedUser, deleteAuth } = useAuthentication();
   const currencies = ["usd$", "cad$", "gbp£"];
   const [RegCurr, setRegCurr] = useState(currencies[0]);
-  let registerUser = null
+  let registerUser = null;
 
   async function handleRegister(e) {
     try {
@@ -32,8 +32,15 @@ function Register() {
       } else {
         e.preventDefault();
 
-        if (username.length > 30) {
-          setError("Username must be 30 characters or less");
+        if (!/^[a-zA-Z0-9_-]{5,30}$/.test(username)) {
+          setError(
+            "Username must consist of 5-30 alphanumeric, underscore or hyphen characters."
+          );
+          return;
+        }
+
+        if (/\s/.test(pass)) {
+          setError("Password cannot contain spaces.");
           return;
         }
 
@@ -51,10 +58,10 @@ function Register() {
 
         if (usernameList.empty) {
           const user = await register(email, pass);
-          registerUser = user.user.uid  
+          registerUser = user.user.uid;
 
           const batch = writeBatch(db);
-                                                                                                                
+
           batch.set(doc(db, "crypto-accounts", user.user.uid), {
             balance: 100000,
             currency: RegCurr,
@@ -87,7 +94,7 @@ function Register() {
       } else if ("auth/invalid-email" === String(e.code)) {
         setError("Invalid email");
       } else {
-        deleteAuth(registerUser)
+        deleteAuth(registerUser);
         setError("An error occured. Please try again");
         console.error(e.code);
       }

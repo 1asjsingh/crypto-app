@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Portfolio.css";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import Loading from "./Loading";
-import expressAxios from "./expressAxios";
+import expressAxios from "../axios/express";
 import { Table, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";

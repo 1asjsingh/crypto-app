@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Table } from "react-bootstrap";
-import expressAxios from "./expressAxios";
+import expressAxios from "../axios/express";
 import Loading from "./Loading";
 
 function Leaderboard() {

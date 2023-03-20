@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "../axios/coingecko";
-import expressAxios from "./expressAxios";
-import predictionAxios from "./predictionAxios";
+import coingecko from "../axios/coingecko";
+import expressAxios from "../axios/express";
+import predictionAxios from "../axios/flask";
 import Loading from "./Loading";
 import { getDetails } from "./requests.js";
 import Chart from "./Chart.js";
@@ -56,7 +56,7 @@ function CoinDetails() {
   useEffect(() => {
     async function getData() {
       try {
-        const request = await axios.get(getDetails(coin));
+        const request = await coingecko.get(getDetails(coin));
         setDetails(request.data);
 
         if (predictedCoins().includes(coin)) {

@@ -1,0 +1,4 @@
+{
+  "coin_id": ["BTC", "ETH", "DOGE", "USDT", "XRP"],
+  "vs_currency": ["USD", "GBP", "CAD"]
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "./axios";
+import coingecko from "../axios/coingecko";
 import { getChart } from "./requests.js";
 import Loading from "./Loading";
 import moment from "moment";
@@ -29,19 +29,21 @@ function Chart({ currency, coin, prediction }) {
   useEffect(() => {
     async function getData() {
       try {
-        let res = await axios.get(getChart(coin, currency, range));
+        let res = await coingecko.get(getChart(coin, currency, range));
         res = res.data.prices;
 
         if (prediction) {
           let todayTime = parseInt(res[res.length - 1][0]);
-
           let todayUnix = new Date(todayTime);
           todayUnix = moment(todayUnix).format("L HH:mm");
 
-          let predArr = prediction.map((price) => {
-            todayTime += 86400000; //CHANGE =============================
-            let unix = new Date(todayTime);
-            unix = moment(unix).format("L HH:mm");
+          let predArr = prediction.map((dayPred) => {
+            let [seconds, price] = dayPred;
+            console.log(seconds);
+            console.log(price);
+            // todayTime += 86400000; //CHANGE =============================
+            // let unix = new Date(todayTime);
+            let unix = moment(parseInt(seconds) * 1000).format("L HH:mm");
             return { x: unix, y: price };
           });
 

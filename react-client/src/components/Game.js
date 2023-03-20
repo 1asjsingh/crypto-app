@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Col, Container, Row, Button, Alert, Table } from "react-bootstrap";
 import axios from "../axios/coingecko";
 import Candlestick from "./Candlestick";
-import expressAxios from "./expressAxios";
+import expressAxios from "../axios/express";
 import Loading from "./Loading";
 import { getCandleChart } from "./requests.js";
 import { useAuthentication } from "../contexts/AuthenticationContext";

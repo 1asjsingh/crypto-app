@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "./axios";
+import coingecko from "../axios/coingecko";
 import ReactApexChart from "react-apexcharts";
 import { getCandleChart } from "./requests.js";
 import Loading from "./Loading";
@@ -14,7 +14,7 @@ function Candlestick({ currency, coin, gameData }) {
   useEffect(() => {
     async function getCandleData() {
       try {
-        const res = await axios.get(getCandleChart(coin, currency, range));
+        const res = await coingecko.get(getCandleChart(coin, currency, range));
         setCandleData(res.data);
         setLoading(false);
       } catch (e) {

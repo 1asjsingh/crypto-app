@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Loading from "./Loading";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 import { Container, Row, Table } from "react-bootstrap";
-import expressAxios from "./expressAxios";
+import expressAxios from "../axios/express";
 import { useNavigate } from "react-router-dom";
 
 function History() {
@@ -28,7 +28,9 @@ function History() {
         );
         transactions = transactions.data;
 
-        const coins = await expressAxios.get(`coingecko/currentprices/${getCurr()}`);
+        const coins = await expressAxios.get(
+          `coingecko/currentprices/${getCurr()}`
+        );
 
         setTransactions(transactions);
         setCoinData(coins.data);
